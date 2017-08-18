@@ -1,3 +1,13 @@
 <resources>
     <string name="app_name">BarcodeGenerator</string>
+
+
+    <string-array name="type_of_barcode">
+        <item>UPC-A</item>
+        <item>UPC-E</item>
+        <item>EAN-8</item>
+        <item>EAN-13</item>
+        <item>RSS-14</item>
+        <item>RSS-Expanded</item>
+    </string-array>
 </resources>
