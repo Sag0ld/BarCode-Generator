@@ -2,9 +2,7 @@ package com.sag0ld.barcodegenerator
 
 import android.graphics.Bitmap
 import com.google.zxing.BarcodeFormat
-import com.google.zxing.oned.MultiFormatOneDReader
 import com.google.zxing.oned.UPCAWriter
-import com.google.zxing.oned.UPCEANReader
 
 /**
  * Created by Sagold on 2017-08-18.
@@ -13,8 +11,8 @@ class UPCA (override var content: String) : Barcode() {
 
     init {
         // Validation
-        if (content.length > 11) {
-            throw Exception ("Must be 11 digit long.")
+        if (content.length > 12) {
+            throw Exception ("Must be 11 or 12 digit long.")
         }
     }
 

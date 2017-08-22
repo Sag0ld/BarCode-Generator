@@ -13,10 +13,11 @@ class Controller private constructor(){
     }
 
     fun generateBarcode (type : String, content : String) : Bitmap {
-        var barcode :Barcode
+        val barcode :Barcode
         try {
             when (type) {
                 "UPC-A" -> barcode = UPCA(content)
+                "UPC-E" -> barcode = UPCE(content)
                 else -> barcode = UPCA(content)
             }
        } catch ( e : Exception) {

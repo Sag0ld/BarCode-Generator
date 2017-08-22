@@ -75,14 +75,15 @@ class MainActivity : AppCompatActivity() {
         })
     }
 
-    private fun isUPCAValid(content : String) :Boolean {
-        if (content.length < 11)
+    private fun isUPCValid(content : String, limit : Int) : Boolean {
+        if (content.length < limit)
             return false
-        if (content.length > 11) {
-            errorsMessages.append("The content must be 11 digit long.")
+        if (content.length > limit +1) {
+            errorsMessages.append("The content must be $limit or ${limit+1} digit long.")
             return false
         }
-        if (content.length == 11 && !content.matches(Regex("^\\d+$"))){
+        if ((content.length == limit || content.length == limit +1)
+                && !content.matches(Regex("^\\d+$"))) {
             errorsMessages.append("The content must be only digit.")
             return false
         }
@@ -92,7 +93,8 @@ class MainActivity : AppCompatActivity() {
 
     private fun isValid( type : String, content : String) : Boolean {
         when (type) {
-            "UPC-A" ->  return isUPCAValid(content)
+            "UPC-A" ->  return isUPCValid(content, 11)
+            "UPC-E" ->  return isUPCValid(content, 7)
             else  -> return false
         }
     }
