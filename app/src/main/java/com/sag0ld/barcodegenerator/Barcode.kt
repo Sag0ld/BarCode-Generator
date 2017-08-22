@@ -20,16 +20,15 @@ abstract class Barcode {
     fun toBitmap(matrix : BitMatrix) : Bitmap {
         val height = matrix.height
         val width = matrix.width
-        val bmp = Bitmap.createBitmap(width, height, Bitmap.Config.RGB_565)
-        var x : Int = 0
-        while ( x < width - 1) {
-            x++
-            var y :Int = 0
-            while (y < height - 1){
-                y++
-                bmp.setPixel(x, y, if (matrix.get(x, y)) Color.WHITE else Color.BLACK)
+
+        val bmp = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
+
+        for (x in 0 .. (width - 1)) {
+            for(y in 0 .. (height - 1)) {
+                bmp.setPixel(x,y,if (matrix.get(x, y)) Color.BLACK else Color.WHITE)
             }
         }
+
         return bmp
     }
 }

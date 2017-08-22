@@ -14,14 +14,14 @@ class Controller private constructor(){
 
     fun generateBarcode (type : String, content : String) : Bitmap {
         var barcode :Barcode
-        //try {
+        try {
             when (type) {
                 "UPC-A" -> barcode = UPCA(content)
                 else -> barcode = UPCA(content)
             }
-      // éé } catch ( e : Exception) {
-       //     throw Exception(e)
-        //}
+       } catch ( e : Exception) {
+            throw Exception(e)
+        }
         return barcode.generate()
     }
 }

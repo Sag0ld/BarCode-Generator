@@ -39,11 +39,11 @@ class MainActivity : AppCompatActivity() {
                 val type = barcodeTypeSpinner.selectedItem.toString()
                 val content = contentEditText.text.toString()
                 if (isValid(type, content)) {
-                 //   try {
+                    try {
                         setBarcodeImage(Controller.instance.generateBarcode(type, content))
-                 /*   } catch (e: Exception) {
+                    } catch (e: Exception) {
                         Toast.makeText(this@MainActivity, e.toString(), Toast.LENGTH_SHORT).show()
-                    }*/
+                    }
                 } else if(errorsMessages.isNotEmpty()) {
                     Toast.makeText(this@MainActivity, errorsMessages.toString(), Toast.LENGTH_SHORT).show()
                     errorsMessages.delete(0,errorsMessages.lastIndex+1)
@@ -59,11 +59,11 @@ class MainActivity : AppCompatActivity() {
             override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
                 val type = barcodeTypeSpinner.selectedItem.toString()
                 if(isValid(type, p0.toString())) {
-                 //  try {
+                   try {
                        setBarcodeImage(Controller.instance.generateBarcode(type, p0.toString()))
-               /*    } catch (e: Exception) {
+                   } catch (e: Exception) {
                        Toast.makeText(this@MainActivity, e.message, Toast.LENGTH_SHORT).show()
-                   }*/
+                   }
                } else if(errorsMessages.isNotEmpty()) {
                     Toast.makeText(this@MainActivity, errorsMessages.toString(), Toast.LENGTH_SHORT).show()
                     errorsMessages.delete(0,errorsMessages.lastIndex+1)
