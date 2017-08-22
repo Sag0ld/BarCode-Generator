@@ -24,9 +24,6 @@
     <EditText
         android:id="@+id/contentEditText"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:ems="10"
-        android:inputType="textMultiLine"
-        android:selectAllOnFocus="true"
-        android:textIsSelectable="true" />
+        android:layout_height="wrap_content"
+        android:ems="10" />
 </LinearLayout>

@@ -12,7 +12,16 @@ class Controller private constructor(){
         val instance : Controller by lazy {Holder.INSTANCE}
     }
 
-    fun generateBarcode (type : String, content : String) {
-
+    fun generateBarcode (type : String, content : String) : Bitmap {
+        var barcode :Barcode
+        //try {
+            when (type) {
+                "UPC-A" -> barcode = UPCA(content)
+                else -> barcode = UPCA(content)
+            }
+      // éé } catch ( e : Exception) {
+       //     throw Exception(e)
+        //}
+        return barcode.generate()
     }
 }
