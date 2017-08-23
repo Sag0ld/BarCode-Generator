@@ -94,11 +94,23 @@ class MainActivity : AppCompatActivity() {
         return isUPCValid(content, limit)
     }
 
+    private fun isCode128Valid(content : String) :Boolean {
+        if(content.length < 1 || content.length > 80) {
+            errorsMessages.append("Contents length should be between 1 and 80 characters.")
+            return false
+        }
+        return true
+    }
+
     private fun isValid( type : String, content : String) : Boolean {
         when (type) {
-            "UPC-A" ->  return isUPCValid(content, 11)
-            "UPC-E" ->  return isUPCValid(content, 7)
-            "EAN-8" ->  return isEANValid(content,7)
+            "UPC-A"     ->  return isUPCValid(content, 11)
+            "UPC-E"     ->  return isUPCValid(content, 7)
+            "EAN-8"     ->  return isEANValid(content,7)
+            "EAN-13"    ->  return isEANValid(content, 12)
+            "Code 128"  ->  return isCode128Valid(content)
+            "QR Code"   ->  return true
+
             else  -> return false
         }
     }

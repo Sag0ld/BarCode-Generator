@@ -9,6 +9,13 @@ import com.google.zxing.oned.EAN8Writer
  */
 class EAN8 (override var content: String) : Barcode() {
 
+    init {
+        //Validation
+        if (content.length > 8) {
+            throw Exception ("Must be 7 or 8 digit long.")
+        }
+    }
+
     override fun generate(): Bitmap {
         val barcode = EAN8Writer().encode(content, BarcodeFormat.EAN_8, width, height)
         return toBitmap(barcode)

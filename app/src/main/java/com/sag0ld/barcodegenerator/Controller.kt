@@ -16,9 +16,12 @@ class Controller private constructor(){
         val barcode :Barcode
         try {
             when (type) {
-                "UPC-A" -> barcode = UPCA(content)
-                "UPC-E" -> barcode = UPCE(content)
-                "EAN-8" -> barcode = EAN8(content)
+                "UPC-A"     -> barcode = UPCA(content)
+                "UPC-E"     -> barcode = UPCE(content)
+                "EAN-8"     -> barcode = EAN8(content)
+                "EAN-13"    -> barcode = EAN13(content)
+                "Code 128"  -> barcode = Code128(content)
+                "QR Code"   -> barcode = QRCode(content)
                 else -> barcode = UPCA(content)
             }
        } catch ( e : Exception) {

@@ -11,8 +11,8 @@ class UPCE(override var content: String) : Barcode() {
 
     init {
         //Validation
-        if (content.length > 7) {
-            throw Exception ("Must be 7 digit long.")
+        if (content.length > 8) {
+            throw Exception ("Must be 7 or 8 digit long.")
         }
     }
 

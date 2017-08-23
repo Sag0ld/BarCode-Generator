@@ -7,7 +7,7 @@
         <item>UPC-E</item>
         <item>EAN-8</item>
         <item>EAN-13</item>
-        <item>RSS-14</item>
-        <item>RSS-Expanded</item>
+        <item>Code 128</item>
+        <item>QR Code</item>
     </string-array>
 </resources>
