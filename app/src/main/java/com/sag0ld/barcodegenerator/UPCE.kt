@@ -17,7 +17,7 @@ class UPCE(override var content: String) : Barcode() {
     }
 
     override fun generate(): Bitmap {
-        val barcode = UPCEWriter().encode(content, BarcodeFormat.UPC_E, 160*3, 101*2)
+        val barcode = UPCEWriter().encode(content, BarcodeFormat.UPC_E, width, height)
         return toBitmap(barcode)
     }
 

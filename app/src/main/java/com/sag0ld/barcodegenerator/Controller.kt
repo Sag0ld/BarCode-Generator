@@ -18,6 +18,7 @@ class Controller private constructor(){
             when (type) {
                 "UPC-A" -> barcode = UPCA(content)
                 "UPC-E" -> barcode = UPCE(content)
+                "EAN-8" -> barcode = EAN8(content)
                 else -> barcode = UPCA(content)
             }
        } catch ( e : Exception) {

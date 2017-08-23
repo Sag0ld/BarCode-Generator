@@ -18,7 +18,7 @@ class UPCA (override var content: String) : Barcode() {
 
     override fun generate(): Bitmap {
         var barcode = UPCAWriter().encode(content, BarcodeFormat.UPC_A
-                                                     ,160*5,101*3)
+                                                     ,width,height)
         return toBitmap(barcode)
     }
 

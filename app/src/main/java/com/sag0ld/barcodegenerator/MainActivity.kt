@@ -90,11 +90,15 @@ class MainActivity : AppCompatActivity() {
 
         return true
     }
+    private fun isEANValid (content :String, limit : Int) : Boolean {
+        return isUPCValid(content, limit)
+    }
 
     private fun isValid( type : String, content : String) : Boolean {
         when (type) {
             "UPC-A" ->  return isUPCValid(content, 11)
             "UPC-E" ->  return isUPCValid(content, 7)
+            "EAN-8" ->  return isEANValid(content,7)
             else  -> return false
         }
     }
