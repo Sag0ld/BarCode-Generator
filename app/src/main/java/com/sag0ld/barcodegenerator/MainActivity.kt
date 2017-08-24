@@ -4,6 +4,7 @@ import android.graphics.Bitmap
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.text.Editable
+import android.text.InputType
 import android.text.TextWatcher
 import android.view.View
 import android.widget.*
@@ -37,6 +38,11 @@ class MainActivity : AppCompatActivity() {
 
             override fun onItemSelected(p0: AdapterView<*>?, p1: View?, p2: Int, p3: Long) {
                 val type = barcodeTypeSpinner.selectedItem.toString()
+                when (type) {
+                    "UPC-A", "UPC-E", "EAN-8", "EAN-13" ->  contentEditText.inputType =
+                                                                InputType.TYPE_CLASS_NUMBER
+                    else -> contentEditText.inputType = InputType.TYPE_CLASS_TEXT
+                }
                 val content = contentEditText.text.toString()
                 if (isValid(type, content)) {
                     try {
