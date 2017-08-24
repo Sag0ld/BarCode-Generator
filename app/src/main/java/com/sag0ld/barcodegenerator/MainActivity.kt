@@ -43,6 +43,14 @@ class MainActivity : AppCompatActivity() {
             override fun onItemSelected(p0: AdapterView<*>?, p1: View?, p2: Int, p3: Long) {
                 val type = barcodeTypeSpinner.selectedItem.toString()
 
+                // Trim the content of the editText if is longer
+                val maxLength = getMaxLength()
+                if(contentEditText.length() > maxLength)
+                    contentEditText.text.delete(maxLength - 1, contentEditText.length())
+
+                // Update the limit of editText
+                updateCounterMessage(contentEditText)
+
                 // Update the inputType of the keyboard
                 when (type) {
                     "UPC-A", "UPC-E", "EAN-8", "EAN-13" ->  contentEditText.inputType =
@@ -76,7 +84,7 @@ class MainActivity : AppCompatActivity() {
         // Init the content editText event
         contentEditText.addTextChangedListener( object : TextWatcher {
             override fun afterTextChanged(p0: Editable?) {
-                updateCount(contentEditText)
+                updateCounterMessage(contentEditText)
             }
 
             override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
@@ -103,7 +111,22 @@ class MainActivity : AppCompatActivity() {
             override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) { }
         })
     }
-    private fun updateCount (contentEditText : EditText) {
+
+    fun getMaxLength()  : Int {
+        val type = barcodeTypeSpinner.selectedItem.toString()
+        var maxLength: Int
+        when (type) {
+            "UPC-A" -> maxLength = 11
+            "UPC-E", "EAN-8" -> maxLength = 7
+            "EAN-13" -> maxLength = 12
+            "Code 128" -> maxLength = 80
+            "QR Code" -> maxLength = 9999
+            else -> maxLength = 0
+        }
+        return maxLength
+    }
+
+    fun updateCounterMessage (contentEditText : EditText) {
         counter.clear()
         counter.clearSpans()
 
@@ -111,28 +134,18 @@ class MainActivity : AppCompatActivity() {
         if (length > 0) {
 
             // Set the max length for the barcode type selected
-            val type = barcodeTypeSpinner.selectedItem.toString()
-            var maxLength : Int
-            when (type) {
-                "UPC-A" -> maxLength = 11
-                "UPC-E", "EAN-8" -> maxLength = 7
-                "EAN-13" -> maxLength = 12
-                "Code 128" -> maxLength = 80
-                "QR Code" -> maxLength = 9999
-                else -> maxLength = 0
-            }
+            val maxLength = getMaxLength()
 
             counter.append("$length/$maxLength")
             if (length < maxLength)
                 counter.setSpan(ForegroundColorSpan(Color.GRAY), 0, counter.length,
-                                Spanned.SPAN_INCLUSIVE_EXCLUSIVE)
+                        Spanned.SPAN_INCLUSIVE_EXCLUSIVE)
             if (length == maxLength)
                 counter.setSpan(ForegroundColorSpan(Color.GREEN), 0, counter.length,
                         Spanned.SPAN_INCLUSIVE_EXCLUSIVE)
 
             contentEditText.error = counter
         }
-
     }
 
     private fun isUPCValid(content : String, limit : Int) : Boolean {
