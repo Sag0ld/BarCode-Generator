@@ -1,7 +1,10 @@
 package com.sag0ld.barcodegenerator
 
+import android.content.Context
+import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.Color
+import android.os.AsyncTask
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.support.design.widget.TextInputLayout
@@ -10,10 +13,13 @@ import android.text.style.ForegroundColorSpan
 import android.view.View
 import android.widget.*
 import kotlinx.android.synthetic.main.activity_main.*
+import android.text.InputFilter
+import android.view.animation.AlphaAnimation
 
 class MainActivity : AppCompatActivity() {
     private val errorsMessages = StringBuilder()
     private val counter = SpannableStringBuilder()
+    public lateinit var progressBarHolder :FrameLayout
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -24,6 +30,7 @@ class MainActivity : AppCompatActivity() {
         val contentEditText  = contentTextLayout.editText!!
         val barcodeTypeSpinner : Spinner = findViewById(R.id.barcodeTypeSpinner)
         val barcodeView : ImageView = findViewById(R.id.barcodeView)
+        progressBarHolder = findViewById(R.id.progressBarHolder)
 
         // Set the barcode as imageView
         fun setBarcodeImage (b : Bitmap) {
@@ -46,7 +53,12 @@ class MainActivity : AppCompatActivity() {
                 // Trim the content of the editText if is longer
                 val maxLength = getMaxLength()
                 if(contentEditText.length() > maxLength)
-                    contentEditText.text.delete(maxLength - 1, contentEditText.length())
+                    contentEditText.text.delete(maxLength, contentEditText.length())
+
+                // Set limit input
+                val FilterArray = arrayOfNulls<InputFilter>(1)
+                FilterArray[0] = InputFilter.LengthFilter(maxLength)
+                contentEditText.filters = FilterArray
 
                 // Update the limit of editText
                 updateCounterMessage(contentEditText)
@@ -63,7 +75,8 @@ class MainActivity : AppCompatActivity() {
                 // Generate a barcode
                 if (isValid(type, content)) {
                     try {
-                        setBarcodeImage(Controller.instance.generateBarcode(type, content))
+                        //setBarcodeImage(Controller.instance.generateBarcode(type, content))
+                        setBarcodeImage(generateBarcode(progressBarHolder).execute(type, p0.toString()).get())
                     } catch (e: Exception) {
 
                         // Show errors message from API
@@ -93,7 +106,7 @@ class MainActivity : AppCompatActivity() {
                 // Generate a barcode and set the imageView
                 if (isValid(type, p0.toString())) {
                    try {
-                       setBarcodeImage(Controller.instance.generateBarcode(type, p0.toString()))
+                       setBarcodeImage(generateBarcode(progressBarHolder).execute(type, p0.toString()).get())
                    } catch (e: Exception) {
                        // Show errors message from API
                        Toast.makeText(this@MainActivity, e.message,
@@ -144,7 +157,7 @@ class MainActivity : AppCompatActivity() {
                 counter.setSpan(ForegroundColorSpan(Color.GREEN), 0, counter.length,
                         Spanned.SPAN_INCLUSIVE_EXCLUSIVE)
 
-            contentEditText.error = counter
+            contentTextInputLayout.error = counter
         }
     }
 
@@ -184,5 +197,30 @@ class MainActivity : AppCompatActivity() {
             "QR Code"   ->  return true
             else  -> return false
         }
+    }
+
+    class generateBarcode (val holder : FrameLayout) : AsyncTask<String, Int, Bitmap>() {
+        init {
+                   }
+
+        override fun onPreExecute() {
+            super.onPreExecute()
+            // Show progressBar
+            holder.animation = AlphaAnimation(0f, 1f)
+            holder.visibility = View.VISIBLE
+            // Set the imageView of the barcode
+
+        }
+
+        override fun onPostExecute(aVoid: Bitmap) {
+            // Hide progressBar
+            holder.animation = AlphaAnimation(1f, 0f)
+            holder.visibility = View.GONE
+
+        }
+        override fun doInBackground(vararg args: String): Bitmap {
+            return Controller.instance.generateBarcode(args[0], args[1] )
+        }
+
     }
 }

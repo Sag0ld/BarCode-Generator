@@ -1,6 +1,6 @@
 <resources>
     <string name="app_name">BarcodeGenerator</string>
-
+    <string name="dialog_title">Barcode in progress</string>
 
     <string-array name="type_of_barcode">
         <item>UPC-A</item>
