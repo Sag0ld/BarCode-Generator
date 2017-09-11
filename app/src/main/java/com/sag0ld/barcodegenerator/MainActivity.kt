@@ -1,7 +1,5 @@
 package com.sag0ld.barcodegenerator
 
-import android.content.Context
-import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.Color
 import android.os.AsyncTask
@@ -14,12 +12,10 @@ import android.view.View
 import android.widget.*
 import kotlinx.android.synthetic.main.activity_main.*
 import android.text.InputFilter
-import android.view.animation.AlphaAnimation
 
 class MainActivity : AppCompatActivity() {
     private val errorsMessages = StringBuilder()
     private val counter = SpannableStringBuilder()
-    public lateinit var progressBarHolder :FrameLayout
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -29,13 +25,8 @@ class MainActivity : AppCompatActivity() {
         val contentTextLayout: TextInputLayout = findViewById(R.id.contentTextInputLayout)
         val contentEditText  = contentTextLayout.editText!!
         val barcodeTypeSpinner : Spinner = findViewById(R.id.barcodeTypeSpinner)
-        val barcodeView : ImageView = findViewById(R.id.barcodeView)
-        progressBarHolder = findViewById(R.id.progressBarHolder)
-
-        // Set the barcode as imageView
-        fun setBarcodeImage (b : Bitmap) {
-            barcodeView.setImageBitmap(b)
-        }
+        val barcodeView  : ImageView = findViewById(R.id.barcodeView)
+        var progressBarHolder : RelativeLayout = findViewById(R.id.progressBarHolder)
 
         // Init the barcode spinner event
         val adapter : ArrayAdapter<CharSequence> = ArrayAdapter.createFromResource(this,
@@ -76,7 +67,7 @@ class MainActivity : AppCompatActivity() {
                 if (isValid(type, content)) {
                     try {
                         //setBarcodeImage(Controller.instance.generateBarcode(type, content))
-                        setBarcodeImage(generateBarcode(progressBarHolder).execute(type, p0.toString()).get())
+                        generateBarcode(progressBarHolder, barcodeView).execute(type, p0.toString())
                     } catch (e: Exception) {
 
                         // Show errors message from API
@@ -106,7 +97,7 @@ class MainActivity : AppCompatActivity() {
                 // Generate a barcode and set the imageView
                 if (isValid(type, p0.toString())) {
                    try {
-                       setBarcodeImage(generateBarcode(progressBarHolder).execute(type, p0.toString()).get())
+                       generateBarcode(progressBarHolder, barcodeView).execute(type, p0.toString())
                    } catch (e: Exception) {
                        // Show errors message from API
                        Toast.makeText(this@MainActivity, e.message,
@@ -127,7 +118,7 @@ class MainActivity : AppCompatActivity() {
 
     fun getMaxLength()  : Int {
         val type = barcodeTypeSpinner.selectedItem.toString()
-        var maxLength: Int
+        val maxLength: Int
         when (type) {
             "UPC-A" -> maxLength = 11
             "UPC-E", "EAN-8" -> maxLength = 7
@@ -199,23 +190,21 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    class generateBarcode (val holder : FrameLayout) : AsyncTask<String, Int, Bitmap>() {
-        init {
-                   }
+    class generateBarcode (val holder : RelativeLayout, val barcodeView : ImageView)
+            : AsyncTask<String, Int, Bitmap>() {
 
         override fun onPreExecute() {
             super.onPreExecute()
             // Show progressBar
-            holder.animation = AlphaAnimation(0f, 1f)
             holder.visibility = View.VISIBLE
             // Set the imageView of the barcode
 
         }
 
-        override fun onPostExecute(aVoid: Bitmap) {
+        override fun onPostExecute(barcode: Bitmap) {
             // Hide progressBar
-            holder.animation = AlphaAnimation(1f, 0f)
             holder.visibility = View.GONE
+            barcodeView.setImageBitmap(barcode)
 
         }
         override fun doInBackground(vararg args: String): Bitmap {

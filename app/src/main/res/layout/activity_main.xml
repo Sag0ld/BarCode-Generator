@@ -1,52 +1,65 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:layout_margin="10dp"
-    android:orientation="vertical">
+    android:id="@+id/main_layout">
 
-    <FrameLayout
-        android:id="@+id/progressBarHolder"
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:animateLayoutChanges="true"
-        android:visibility="gone">
+        android:layout_height="match_parent">
+
+        <ImageView
+            android:id="@+id/barcodeView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="10dp"
+            app:srcCompat="@mipmap/ic_launcher" />
+
+        <Spinner
+            android:id="@+id/barcodeTypeSpinner"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentStart="true"
+            android:layout_below="@+id/barcodeView" />
+
+        <android.support.design.widget.TextInputLayout
+            android:id="@+id/contentTextInputLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/barcodeTypeSpinner">
+
+            <android.support.design.widget.TextInputEditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="number" />
+
+        </android.support.design.widget.TextInputLayout>
+    </RelativeLayout>
+
+
+    <RelativeLayout
+        android:id="@+id/progressBarHolder"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:visibility="invisible">
+
+        <TextView
+            android:id="@+id/textViewTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="false"
+            android:text="@string/dialog_title" />
 
         <ProgressBar
             style="?android:attr/progressBarStyleLarge"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:indeterminate="true" />
+            android:layout_below="@id/textViewTitle"
+            android:layout_centerInParent="true"
+            android:layout_margin="10dp" />
+    </RelativeLayout>
 
-    </FrameLayout>
-
-    <ImageView
-        android:id="@+id/barcodeView"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:srcCompat="@mipmap/ic_launcher" />
-
-    <Spinner
-        android:id="@+id/barcodeTypeSpinner"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="10dp"
-        android:layout_marginTop="10dp" />
-
-
-    <android.support.design.widget.TextInputLayout
-        android:id="@+id/contentTextInputLayout"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-
-        <android.support.design.widget.TextInputEditText
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:inputType="number"/>
-
-    </android.support.design.widget.TextInputLayout>
-
-</LinearLayout>
+</FrameLayout>
