@@ -6,7 +6,6 @@ apply plugin: 'kotlin-android-extensions'
 
 android {
     compileSdkVersion 26
-    buildToolsVersion "26.0.0"
     defaultConfig {
         applicationId "com.sag0ld.barcodegenerator"
         minSdkVersion 19

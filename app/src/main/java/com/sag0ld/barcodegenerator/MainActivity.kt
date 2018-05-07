@@ -1,8 +1,6 @@
 package com.sag0ld.barcodegenerator
 
-import android.graphics.Bitmap
 import android.graphics.Color
-import android.os.AsyncTask
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.support.design.widget.TextInputLayout
@@ -12,29 +10,30 @@ import android.view.View
 import android.widget.*
 import kotlinx.android.synthetic.main.activity_main.*
 import android.text.InputFilter
+import android.os.Handler
 
 class MainActivity : AppCompatActivity() {
     private val errorsMessages = StringBuilder()
-    private val counter = SpannableStringBuilder()
+    lateinit var contentEditText : EditText
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
         // Init val
-        val contentTextLayout: TextInputLayout = findViewById(R.id.contentTextInputLayout)
-        val contentEditText  = contentTextLayout.editText!!
+        val contentTextLayout : TextInputLayout = findViewById(R.id.contentTextInputLayout)
+        contentEditText = contentTextLayout.editText!!
         val barcodeTypeSpinner : Spinner = findViewById(R.id.barcodeTypeSpinner)
         val barcodeView  : ImageView = findViewById(R.id.barcodeView)
         var progressBarHolder : RelativeLayout = findViewById(R.id.progressBarHolder)
 
-        // Init the barcode spinner event
+        // Init the barcode spinner
         val adapter : ArrayAdapter<CharSequence> = ArrayAdapter.createFromResource(this,
                             R.array.type_of_barcode,android.R.layout.simple_spinner_item)
-
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
         barcodeTypeSpinner.adapter = adapter
 
+        // Barcode spinner on child selected
         barcodeTypeSpinner.onItemSelectedListener = object: AdapterView.OnItemSelectedListener {
             override fun onNothingSelected(p0: AdapterView<*>?) { }
 
@@ -66,16 +65,14 @@ class MainActivity : AppCompatActivity() {
                 // Generate a barcode
                 if (isValid(type, content)) {
                     try {
-                        //setBarcodeImage(Controller.instance.generateBarcode(type, content))
-                        generateBarcode(progressBarHolder, barcodeView).execute(type, p0.toString())
+                        GenerateBarcodeTask(progressBarHolder, barcodeView, contentEditText)
+                                .execute(type, p0.toString())
                     } catch (e: Exception) {
-
                         // Show errors message from API
                         Toast.makeText(this@MainActivity, e.toString(),
                                         Toast.LENGTH_SHORT).show()
                     }
                 } else if (errorsMessages.isNotEmpty()) {
-
                     // Show errors messages from the front end
                     Toast.makeText(this@MainActivity, errorsMessages.toString(),
                                     Toast.LENGTH_SHORT).show()
@@ -88,7 +85,22 @@ class MainActivity : AppCompatActivity() {
         // Init the content editText event
         contentEditText.addTextChangedListener( object : TextWatcher {
             override fun afterTextChanged(p0: Editable?) {
-                updateCounterMessage(contentEditText)
+                if (!p0.isNullOrEmpty()) {
+                    updateCounterMessage(contentEditText)
+
+                    val type = barcodeTypeSpinner.selectedItem.toString()
+                    if(type == "Code 128" || type == "QR Code") {
+                        last_text_edit = System.currentTimeMillis()
+                       try {
+                           handler.postDelayed(input_finish_checker, delay)
+                       }
+                       catch (e: Exception) {
+                           // Show errors message from API
+                           Toast.makeText(this@MainActivity, e.message,
+                                   Toast.LENGTH_SHORT).show()
+                       }
+                    }
+                }
             }
 
             override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
@@ -97,7 +109,13 @@ class MainActivity : AppCompatActivity() {
                 // Generate a barcode and set the imageView
                 if (isValid(type, p0.toString())) {
                    try {
-                       generateBarcode(progressBarHolder, barcodeView).execute(type, p0.toString())
+                       if (type == "Code 128" || type == "QR Code") {
+                           handler.removeCallbacks(input_finish_checker)
+                       }
+                       else {
+                           GenerateBarcodeTask(progressBarHolder, barcodeView, contentEditText)
+                                   .execute(type, p0.toString())
+                       }
                    } catch (e: Exception) {
                        // Show errors message from API
                        Toast.makeText(this@MainActivity, e.message,
@@ -116,6 +134,21 @@ class MainActivity : AppCompatActivity() {
         })
     }
 
+    var delay: Long = 2000 // 2 seconds after user stops typing
+    var last_text_edit: Long = 0
+    var handler = Handler()
+
+    private val input_finish_checker = Runnable {
+        val type = barcodeTypeSpinner.selectedItem.toString()
+        if (System.currentTimeMillis() > last_text_edit + delay - 500) {
+            if(isValid(type, contentEditText.text.toString())) {
+                GenerateBarcodeTask(progressBarHolder, barcodeView, contentEditText)
+                        .execute(type, contentEditText.text.toString())
+            }
+        }
+    }
+
+
     fun getMaxLength()  : Int {
         val type = barcodeTypeSpinner.selectedItem.toString()
         val maxLength: Int
@@ -131,6 +164,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun updateCounterMessage (contentEditText : EditText) {
+        val counter = SpannableStringBuilder()
         counter.clear()
         counter.clearSpans()
 
@@ -188,28 +222,5 @@ class MainActivity : AppCompatActivity() {
             "QR Code"   ->  return true
             else  -> return false
         }
-    }
-
-    class generateBarcode (val holder : RelativeLayout, val barcodeView : ImageView)
-            : AsyncTask<String, Int, Bitmap>() {
-
-        override fun onPreExecute() {
-            super.onPreExecute()
-            // Show progressBar
-            holder.visibility = View.VISIBLE
-            // Set the imageView of the barcode
-
-        }
-
-        override fun onPostExecute(barcode: Bitmap) {
-            // Hide progressBar
-            holder.visibility = View.GONE
-            barcodeView.setImageBitmap(barcode)
-
-        }
-        override fun doInBackground(vararg args: String): Bitmap {
-            return Controller.instance.generateBarcode(args[0], args[1] )
-        }
-
     }
 }

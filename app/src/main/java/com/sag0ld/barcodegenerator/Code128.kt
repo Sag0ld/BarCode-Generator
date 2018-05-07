@@ -10,7 +10,7 @@ import com.google.zxing.oned.Code128Writer
 
     init {
         //Validation
-        if(content.length < 1 || content.length > 80)
+        if(content.isEmpty() || content.length > 80)
             throw Exception ("Contents length should be between 1 and 80 characters.")
     }
     override fun generate(): Bitmap {

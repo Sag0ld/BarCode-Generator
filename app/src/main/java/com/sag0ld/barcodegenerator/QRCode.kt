@@ -4,13 +4,10 @@ import android.graphics.Bitmap
 import com.google.zxing.BarcodeFormat
 import com.google.zxing.qrcode.QRCodeWriter
 
-/**
- * Created by Sagold on 2017-08-23.
- */
 class QRCode(override var content: String) : Barcode() {
     init {
         // Validation
-        if (content.length == 0)
+        if (content.isEmpty())
             throw Exception ("Content can't be empty.")
 
     }

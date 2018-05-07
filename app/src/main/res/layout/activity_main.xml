@@ -17,18 +17,36 @@
             android:layout_margin="10dp"
             app:srcCompat="@mipmap/ic_launcher" />
 
+        <TextView
+            android:id="@+id/spinnerLabel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/spinner_label"
+            android:layout_below="@id/barcodeView"
+            />
+
         <Spinner
             android:id="@+id/barcodeTypeSpinner"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignParentStart="true"
-            android:layout_below="@+id/barcodeView" />
+            android:layout_below="@id/barcodeView"
+            android:layout_toRightOf="@id/spinnerLabel"
+            />
+
+        <TextView
+            android:id="@+id/typeDescription"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/upca_description"
+            android:layout_below="@id/barcodeTypeSpinner"
+            android:layout_marginTop="10dp"
+            android:padding="10dp"/>
 
         <android.support.design.widget.TextInputLayout
             android:id="@+id/contentTextInputLayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/barcodeTypeSpinner">
+            android:layout_below="@+id/typeDescription">
 
             <android.support.design.widget.TextInputEditText
                 android:layout_width="match_parent"
@@ -36,6 +54,7 @@
                 android:inputType="number" />
 
         </android.support.design.widget.TextInputLayout>
+
     </RelativeLayout>
 
 
@@ -44,7 +63,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:visibility="invisible">
+        android:visibility="gone">
 
         <TextView
             android:id="@+id/textViewTitle"

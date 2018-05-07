@@ -24,9 +24,9 @@ class Controller private constructor(){
                 "QR Code"   -> barcode = QRCode(content)
                 else -> barcode = UPCA(content)
             }
+            return barcode.generate()
        } catch ( e : Exception) {
             throw Exception(e)
         }
-        return barcode.generate()
     }
 }
