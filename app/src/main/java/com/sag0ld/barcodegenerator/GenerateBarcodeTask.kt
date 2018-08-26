@@ -6,9 +6,9 @@ import android.view.View
 import android.widget.EditText
 import android.widget.ImageView
 import android.widget.RelativeLayout
+import java.lang.reflect.InvocationTargetException
 
-class GenerateBarcodeTask (private val holder : RelativeLayout, private val barcodeView : ImageView,
-                           private val editText : EditText)
+class GenerateBarcodeTask (private val holder : RelativeLayout, private val barcodeView : ImageView)
     : AsyncTask<String, Int, Unit>() {
 
     private var mException: Exception? = null
@@ -18,7 +18,6 @@ class GenerateBarcodeTask (private val holder : RelativeLayout, private val barc
         super.onPreExecute()
         // Show progressBar
         holder.visibility = View.VISIBLE
-        editText.isEnabled = false
     }
 
     override fun onPostExecute(result: Unit) {
@@ -28,13 +27,16 @@ class GenerateBarcodeTask (private val holder : RelativeLayout, private val barc
             // Hide progressBar
             holder.visibility = View.GONE
             barcodeView.setImageBitmap(mBitmap)
-            editText.isEnabled = true
         }
     }
 
     override fun doInBackground(vararg args: String) {
         try {
-            mBitmap = Controller.instance.generateBarcode(args[0], args[1])
+            Controller.instance.generateBarcode(args[0], args[1])?.let {
+                mBitmap = it
+            }
+        } catch (exception: InvocationTargetException) {
+            mException = exception
         } catch (exception: Exception) {
             mException = exception
         }

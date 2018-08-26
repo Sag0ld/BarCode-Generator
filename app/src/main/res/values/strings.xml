@@ -2,8 +2,13 @@
     <string name="app_name">BarcodeGenerator</string>
     <string name="dialog_title">Barcode in progress</string>
     <string name="btn_generate">Generate</string>
-    <string name="upca_description">This barcode must be 11 digit long. We add the checksum.</string>
     <string name="spinner_label">Type : </string>
+    <string name="upca_description">This barcode must be 11 digit long. We calcul the checksum.</string>
+    <string name="upce_description">This barcode must begin with 0 or 1 and have 7 digit long. We calcul the checksum</string>
+    <string name="ean8_description">This barcode must be 7 digit long. We calcul the checksum</string>
+    <string name="ean13_description">This barcode must be 12 digit long. We calcul the checksum</string>
+    <string name="code128_description">This barcode can have 80 digit and character long. No special character. We calcul the checksum</string>
+    <string name="qr_description">This barcode can be anything bellow 9999 long. We calcul the checksum</string>
 
     <string-array name="type_of_barcode">
         <item>UPC-A</item>

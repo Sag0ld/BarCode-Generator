@@ -14,85 +14,82 @@ import android.os.Handler
 
 class MainActivity : AppCompatActivity() {
     private val errorsMessages = StringBuilder()
-    lateinit var contentEditText : EditText
+    private var contentEditText : EditText? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        // Init val
-        val contentTextLayout : TextInputLayout = findViewById(R.id.contentTextInputLayout)
-        contentEditText = contentTextLayout.editText!!
-        val barcodeTypeSpinner : Spinner = findViewById(R.id.barcodeTypeSpinner)
-        val barcodeView  : ImageView = findViewById(R.id.barcodeView)
-        var progressBarHolder : RelativeLayout = findViewById(R.id.progressBarHolder)
+        contentEditText = contentTextInputLayout.editText
 
-        // Init the barcode spinner
         val adapter : ArrayAdapter<CharSequence> = ArrayAdapter.createFromResource(this,
                             R.array.type_of_barcode,android.R.layout.simple_spinner_item)
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
         barcodeTypeSpinner.adapter = adapter
 
-        // Barcode spinner on child selected
+        val barcodeView  : ImageView = findViewById(R.id.barcodeView)
+        val progressBarHolder : RelativeLayout = findViewById(R.id.progressBarHolder)
+
         barcodeTypeSpinner.onItemSelectedListener = object: AdapterView.OnItemSelectedListener {
             override fun onNothingSelected(p0: AdapterView<*>?) { }
 
             override fun onItemSelected(p0: AdapterView<*>?, p1: View?, p2: Int, p3: Long) {
                 val type = barcodeTypeSpinner.selectedItem.toString()
+                Controller.instance.createBarcodeBox(type)
+                typeDescription.text = Controller.instance.getBarcodeDescription()
+
+                when (type) {
+                    "QR Code", "Code 128" -> contentEditText?.inputType = InputType.TYPE_CLASS_TEXT
+                    else ->  contentEditText?.inputType = InputType.TYPE_CLASS_NUMBER
+                }
 
                 // Trim the content of the editText if is longer
                 val maxLength = getMaxLength()
-                if(contentEditText.length() > maxLength)
-                    contentEditText.text.delete(maxLength, contentEditText.length())
+                contentEditText?.let {
+                    // Set limit input
+                    val filterArray = arrayOfNulls<InputFilter>(1)
+                    filterArray[0] = InputFilter.LengthFilter(maxLength)
+                    it.filters = filterArray
 
-                // Set limit input
-                val FilterArray = arrayOfNulls<InputFilter>(1)
-                FilterArray[0] = InputFilter.LengthFilter(maxLength)
-                contentEditText.filters = FilterArray
+                    // Update the limit of editText
+                    updateCounterMessage(it)
 
-                // Update the limit of editText
-                updateCounterMessage(contentEditText)
+                    val content = it.text.toString()
 
-                // Update the inputType of the keyboard
-                when (type) {
-                    "UPC-A", "UPC-E", "EAN-8", "EAN-13" ->  contentEditText.inputType =
-                                                                InputType.TYPE_CLASS_NUMBER
-                    else -> contentEditText.inputType = InputType.TYPE_CLASS_TEXT
-                }
-
-                val content = contentEditText.text.toString()
-
-                // Generate a barcode
-                if (isValid(type, content)) {
-                    try {
-                        GenerateBarcodeTask(progressBarHolder, barcodeView, contentEditText)
-                                .execute(type, p0.toString())
-                    } catch (e: Exception) {
-                        // Show errors message from API
-                        Toast.makeText(this@MainActivity, e.toString(),
-                                        Toast.LENGTH_SHORT).show()
-                    }
-                } else if (errorsMessages.isNotEmpty()) {
-                    // Show errors messages from the front end
-                    Toast.makeText(this@MainActivity, errorsMessages.toString(),
+                    // Generate a barcode
+                    if (isValid(type, content)) {
+                        try {
+                            GenerateBarcodeTask(progressBarHolder, barcodeView)
+                                    .execute(type, content)
+                        } catch (e: Exception) {
+                            // Show errors message from API
+                            Toast.makeText(this@MainActivity, e.toString(),
                                     Toast.LENGTH_SHORT).show()
-                    // Erase messages
-                    errorsMessages.delete(0, errorsMessages.lastIndex + 1)
+                        }
+                    }
+
+                    if (errorsMessages.isNotEmpty()) {
+                            // Show errors messages from the front end
+                            Toast.makeText(this@MainActivity, errorsMessages.toString(),
+                                    Toast.LENGTH_SHORT).show()
+                            // Erase messages
+                            errorsMessages.delete(0, errorsMessages.lastIndex + 1)
+                    }
                 }
             }
         }
 
         // Init the content editText event
-        contentEditText.addTextChangedListener( object : TextWatcher {
+        contentEditText?.addTextChangedListener( object : TextWatcher {
             override fun afterTextChanged(p0: Editable?) {
                 if (!p0.isNullOrEmpty()) {
-                    updateCounterMessage(contentEditText)
+                    contentEditText?.let { updateCounterMessage(it) }
 
                     val type = barcodeTypeSpinner.selectedItem.toString()
                     if(type == "Code 128" || type == "QR Code") {
-                        last_text_edit = System.currentTimeMillis()
+                        lastTextEdit = System.currentTimeMillis()
                        try {
-                           handler.postDelayed(input_finish_checker, delay)
+                           handler.postDelayed(inputFinishChecker, delay)
                        }
                        catch (e: Exception) {
                            // Show errors message from API
@@ -103,18 +100,18 @@ class MainActivity : AppCompatActivity() {
                 }
             }
 
-            override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
+            override fun onTextChanged(content: CharSequence?, start: Int, before: Int, count: Int) {
                 val type = barcodeTypeSpinner.selectedItem.toString()
 
                 // Generate a barcode and set the imageView
-                if (isValid(type, p0.toString())) {
+                if (isValid(type, content.toString())) {
                    try {
                        if (type == "Code 128" || type == "QR Code") {
-                           handler.removeCallbacks(input_finish_checker)
+                           handler.removeCallbacks(inputFinishChecker)
                        }
                        else {
-                           GenerateBarcodeTask(progressBarHolder, barcodeView, contentEditText)
-                                   .execute(type, p0.toString())
+                           GenerateBarcodeTask(progressBarHolder, barcodeView)
+                                       .execute(type, content?.toString())
                        }
                    } catch (e: Exception) {
                        // Show errors message from API
@@ -135,15 +132,17 @@ class MainActivity : AppCompatActivity() {
     }
 
     var delay: Long = 2000 // 2 seconds after user stops typing
-    var last_text_edit: Long = 0
+    var lastTextEdit: Long = 0
     var handler = Handler()
 
-    private val input_finish_checker = Runnable {
+    private val inputFinishChecker = Runnable {
         val type = barcodeTypeSpinner.selectedItem.toString()
-        if (System.currentTimeMillis() > last_text_edit + delay - 500) {
-            if(isValid(type, contentEditText.text.toString())) {
-                GenerateBarcodeTask(progressBarHolder, barcodeView, contentEditText)
-                        .execute(type, contentEditText.text.toString())
+        if (System.currentTimeMillis() > lastTextEdit + delay - 500) {
+            contentEditText?.let {
+                if (isValid(type, it.text.toString())) {
+                    GenerateBarcodeTask(progressBarHolder, barcodeView)
+                            .execute(type, it.text.toString())
+                }
             }
         }
     }
@@ -152,13 +151,13 @@ class MainActivity : AppCompatActivity() {
     fun getMaxLength()  : Int {
         val type = barcodeTypeSpinner.selectedItem.toString()
         val maxLength: Int
-        when (type) {
-            "UPC-A" -> maxLength = 11
-            "UPC-E", "EAN-8" -> maxLength = 7
-            "EAN-13" -> maxLength = 12
-            "Code 128" -> maxLength = 80
-            "QR Code" -> maxLength = 9999
-            else -> maxLength = 0
+        maxLength = when (type) {
+            "UPC-A" -> 11
+            "UPC-E", "EAN-8" -> 7
+            "EAN-13" -> 12
+            "Code 128" -> 80
+            "QR Code" -> 9999
+            else -> 0
         }
         return maxLength
     }
@@ -170,7 +169,6 @@ class MainActivity : AppCompatActivity() {
 
         val length = contentEditText.length()
         if (length > 0) {
-
             // Set the max length for the barcode type selected
             val maxLength = getMaxLength()
 
@@ -197,10 +195,18 @@ class MainActivity : AppCompatActivity() {
             errorsMessages.append("The content must be only digit.")
             return false
         }
-
         return true
     }
-    private fun isEANValid (content :String, limit : Int) : Boolean {
+
+    private fun isFirstChar0ou1(content : String): Boolean {
+        if (!content[0].equals('0') && !content[0].equals('1')) {
+            errorsMessages.append("The content must begin with 0 or 1")
+            return false
+        }
+        return true
+    }
+
+    private fun isEANValid (content : String, limit : Int) : Boolean {
         return isUPCValid(content, limit)
     }
 
@@ -213,14 +219,18 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun isValid (type : String, content : String) : Boolean {
-        when (type) {
-            "UPC-A"     ->  return isUPCValid(content, 11)
-            "UPC-E"     ->  return isUPCValid(content, 7)
-            "EAN-8"     ->  return isEANValid(content,7)
-            "EAN-13"    ->  return isEANValid(content, 12)
-            "Code 128"  ->  return isCode128Valid(content)
-            "QR Code"   ->  return true
-            else  -> return false
+        return when (type) {
+            "UPC-A"     -> isUPCValid(content, 11)
+            "UPC-E"     -> isUPCValid(content, 7) && isFirstChar0ou1(content)
+            "EAN-8"     -> isEANValid(content,7)
+            "EAN-13"    -> isEANValid(content, 12)
+            "Code 128"  -> isCode128Valid(content)
+            "QR Code"   -> true
+            else  -> false
         }
+    }
+
+    private fun toggleQRInformation(show: Boolean) {
+
     }
 }

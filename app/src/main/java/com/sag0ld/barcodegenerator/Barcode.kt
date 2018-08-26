@@ -11,7 +11,8 @@ abstract class Barcode {
     val width = 160 * 5
     val height = 101 * 3
 
-    abstract var content : String
+    abstract var content : String?
+    abstract var description : String
     abstract fun generate () : Bitmap
     abstract override fun toString () : String
 

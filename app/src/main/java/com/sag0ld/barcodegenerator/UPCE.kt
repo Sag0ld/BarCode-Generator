@@ -1,20 +1,13 @@
 package com.sag0ld.barcodegenerator
 
+import android.content.res.Resources
 import android.graphics.Bitmap
 import com.google.zxing.BarcodeFormat
 import com.google.zxing.oned.UPCEWriter
 
-/**
- * Created by Sagold on 2017-08-22.
- */
-class UPCE(override var content: String) : Barcode() {
+class UPCE(override var content: String?) : Barcode() {
 
-    init {
-        //Validation
-        if (content.length > 8) {
-            throw Exception ("Must be 7 or 8 digit long.")
-        }
-    }
+    override var description: String = App.getContext().getString(R.string.upce_description)
 
     override fun generate(): Bitmap {
         val barcode = UPCEWriter().encode(content, BarcodeFormat.UPC_E, width, height)

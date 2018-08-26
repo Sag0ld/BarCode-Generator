@@ -1,5 +1,6 @@
 package com.sag0ld.barcodegenerator
 
+import android.content.res.Resources
 import android.graphics.Bitmap
 import com.google.zxing.BarcodeFormat
 import com.google.zxing.oned.UPCAWriter
@@ -7,14 +8,9 @@ import com.google.zxing.oned.UPCAWriter
 /**
  * Created by Sagold on 2017-08-18.
  */
-class UPCA (override var content: String) : Barcode() {
+class UPCA (override var content: String?) : Barcode() {
 
-    init {
-        // Validation
-        if (content.length > 12) {
-            throw Exception ("Must be 11 or 12 digit long.")
-        }
-    }
+    override var description: String = App.getContext().getString(R.string.upca_description)
 
     override fun generate(): Bitmap {
         var barcode = UPCAWriter().encode(content, BarcodeFormat.UPC_A
