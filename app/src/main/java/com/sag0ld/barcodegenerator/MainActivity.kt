@@ -10,11 +10,17 @@ import com.sag0ld.barcodegenerator.views.GenerateBarcodeFragment
 import com.sag0ld.barcodegenerator.views.HistoryFragment
 import kotlinx.android.synthetic.main.activity_main2.*
 import kotlinx.android.synthetic.main.app_bar_main2.*
+import com.sag0ld.barcodegenerator.database.AppDatabase
+import android.arch.persistence.room.Room
+
+
 
 class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener, GenerateBarcodeFragment.OnGenerateBarcodeFragmentListener, HistoryFragment.OnFragmentInteractionListener {
 
     private val generateFragment = GenerateBarcodeFragment()
     private val historyFragment = HistoryFragment()
+    private val DATABASE_NAME = "Database"
+    private lateinit var db: AppDatabase
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -32,6 +38,9 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         val transaction = supportFragmentManager.beginTransaction()
         transaction.add(fragment_holder.id, generateFragment, GenerateBarcodeFragment.TAG)
         transaction.commit()
+
+        db = Room.databaseBuilder(applicationContext,
+                AppDatabase::class.java, DATABASE_NAME).build()
     }
 
     override fun onBackPressed() {

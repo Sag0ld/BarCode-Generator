@@ -1,18 +1,17 @@
-package com.sag0ld.barcodegenerator
+package com.sag0ld.barcodegenerator.barcodes
 
 import android.graphics.Bitmap
 import android.graphics.Color
 import com.google.zxing.common.BitMatrix
+import java.util.*
 
-/**
- * Created by Sagold on 2017-08-18.
- */
 abstract class Barcode {
     val width = 160 * 5
     val height = 101 * 3
 
     abstract var content : String?
     abstract var description : String
+    abstract var createAt : Calendar?
     abstract fun generate () : Bitmap
     abstract override fun toString () : String
 

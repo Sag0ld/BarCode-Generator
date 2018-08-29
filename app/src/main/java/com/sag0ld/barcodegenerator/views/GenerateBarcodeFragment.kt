@@ -2,7 +2,6 @@ package com.sag0ld.barcodegenerator.views
 
 import android.content.Context
 import android.graphics.Color
-import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
 import android.support.v4.app.Fragment
@@ -68,7 +67,7 @@ class GenerateBarcodeFragment : Fragment() {
 
                     val content = it.text.toString()
 
-                    // Generate a barcode
+                    // Generate a Barcode
                     if (isValid(type, content)) {
                         try {
                             GenerateBarcodeTask(progressBarHolder, barcodeView)
@@ -115,7 +114,7 @@ class GenerateBarcodeFragment : Fragment() {
             override fun onTextChanged(content: CharSequence?, start: Int, before: Int, count: Int) {
                 val type = barcodeTypeSpinner.selectedItem.toString()
 
-                // Generate a barcode and set the imageView
+                // Generate a Barcode and set the imageView
                 if (isValid(type, content.toString())) {
                     try {
                         if (type == "Code 128" || type == "QR Code") {
@@ -180,7 +179,7 @@ class GenerateBarcodeFragment : Fragment() {
 
         val length = contentEditText.length()
         if (length > 0) {
-            // Set the max length for the barcode type selected
+            // Set the max length for the Barcode type selected
             val maxLength = getMaxLength()
 
             counter.append("$length/$maxLength")

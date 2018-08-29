@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <ImageView
+        android:id="@+id/barcodeImageView"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        app:srcCompat="@drawable/ic_qr" />
+
+    <TextView
+        android:id="@+id/barcodeContentTextView"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:maxLines="2"
+        android:text="This is content"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/createAtTextView"
+        app:layout_constraintLeft_toRightOf="@id/barcodeImageView"/>
+
+    <TextView
+        android:id="@+id/createAtTextView"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="26 août 2018 20h30"
+        app:layout_constraintTop_toBottomOf="@id/barcodeContentTextView"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toRightOf="@id/barcodeImageView"/>
+</android.support.constraint.ConstraintLayout>

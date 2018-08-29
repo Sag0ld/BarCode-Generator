@@ -6,8 +6,10 @@ import android.support.v4.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import com.sag0ld.barcodegenerator.BarcodeAdapter
 
 import com.sag0ld.barcodegenerator.R
+import kotlinx.android.synthetic.main.fragment_history.*
 
 private const val ARG_PARAM1 = "param1"
 private const val ARG_PARAM2 = "param2"
@@ -22,8 +24,13 @@ class HistoryFragment : Fragment() {
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_history, container, false)
+        val view = inflater.inflate(R.layout.fragment_history, container, false)
+
+        context?.let {
+            val adapter = BarcodeAdapter(it)
+            barcodeRecyclerView?.adapter = adapter
+        }
+        return view
     }
 
     override fun onAttach(context: Context) {
@@ -40,7 +47,5 @@ class HistoryFragment : Fragment() {
         listener = null
     }
 
-    interface OnFragmentInteractionListener {
-    }
-
+    interface OnFragmentInteractionListener
 }
