@@ -4,11 +4,12 @@ import android.graphics.Bitmap
 import android.os.AsyncTask
 import android.view.View
 import android.widget.EditText
+import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.RelativeLayout
 import java.lang.reflect.InvocationTargetException
 
-class GenerateBarcodeTask (private val holder : RelativeLayout, private val barcodeView : ImageView)
+class GenerateBarcodeTask (private val holder : FrameLayout, private val barcodeView : ImageView)
     : AsyncTask<String, Int, Unit>() {
 
     private var mException: Exception? = null
@@ -16,7 +17,6 @@ class GenerateBarcodeTask (private val holder : RelativeLayout, private val barc
 
     override fun onPreExecute() {
         super.onPreExecute()
-        // Show progressBar
         holder.visibility = View.VISIBLE
     }
 
