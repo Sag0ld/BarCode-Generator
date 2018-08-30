@@ -5,14 +5,14 @@ import android.graphics.Color
 import com.google.zxing.common.BitMatrix
 import java.util.*
 
-abstract class Barcode {
+abstract class AbstractBarcode {
     val width = 160 * 5
     val height = 101 * 3
 
     abstract var content : String?
     abstract var description : String
     abstract var createAt : Calendar?
-    abstract fun generate () : Bitmap
+    abstract fun generate () : Bitmap?
     abstract override fun toString () : String
 
     /**

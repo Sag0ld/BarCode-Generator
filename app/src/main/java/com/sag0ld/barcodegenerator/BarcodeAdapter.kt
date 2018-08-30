@@ -7,13 +7,14 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import com.bumptech.glide.Glide
-import com.sag0ld.barcodegenerator.barcodes.Barcode
+import com.sag0ld.barcodegenerator.database.Barcode
+import java.util.*
 
 class BarcodeAdapter(val context: Context): RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     var barcodes = mutableListOf<Barcode>()
         set(value) {
-            barcodes = value
+            field = value
             notifyDataSetChanged()
         }
 
@@ -37,10 +38,14 @@ class BarcodeAdapter(val context: Context): RecyclerView.Adapter<RecyclerView.Vi
 
         fun bind(barcode: Barcode) {
             Glide.with(context)
-                    .load(barcode.generate())
+                    .load(barcode.uri)
                     .into(barcodeImageView)
             barcodeContentTextView.text = barcode.content
-            createAtTextView.text = barcode.createAt?.time?.toString()
+            barcode.createAt?.let {
+                val cal = Calendar.getInstance()
+                cal.timeInMillis = it
+                createAtTextView.text = cal.time.toString()
+            }
         }
     }
 }

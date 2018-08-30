@@ -1,5 +1,7 @@
 package com.sag0ld.barcodegenerator
 
+import android.arch.lifecycle.LiveData
+import android.arch.lifecycle.Observer
 import android.os.Bundle
 import android.support.design.widget.NavigationView
 import android.support.v4.view.GravityCompat
@@ -10,17 +12,14 @@ import com.sag0ld.barcodegenerator.views.GenerateBarcodeFragment
 import com.sag0ld.barcodegenerator.views.HistoryFragment
 import kotlinx.android.synthetic.main.activity_main2.*
 import kotlinx.android.synthetic.main.app_bar_main2.*
+import com.sag0ld.barcodegenerator.database.Barcode
 import com.sag0ld.barcodegenerator.database.AppDatabase
-import android.arch.persistence.room.Room
-
-
 
 class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener, GenerateBarcodeFragment.OnGenerateBarcodeFragmentListener, HistoryFragment.OnFragmentInteractionListener {
 
     private val generateFragment = GenerateBarcodeFragment()
     private val historyFragment = HistoryFragment()
-    private val DATABASE_NAME = "Database"
-    private lateinit var db: AppDatabase
+    private lateinit var barcodes: LiveData<List<Barcode>>
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -39,8 +38,12 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         transaction.add(fragment_holder.id, generateFragment, GenerateBarcodeFragment.TAG)
         transaction.commit()
 
-        db = Room.databaseBuilder(applicationContext,
-                AppDatabase::class.java, DATABASE_NAME).build()
+        barcodes = AppDatabase.getAppDatabase(this).userDao().getAll()
+        barcodes.observe(this, Observer<List<Barcode>> {
+            it?.let {
+                updateHistories(it)
+            }
+        })
     }
 
     override fun onBackPressed() {
@@ -74,5 +77,9 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
         drawer_layout.closeDrawer(GravityCompat.START)
         return true
+    }
+
+    fun updateHistories(barcodes: List<Barcode>) {
+        historyFragment.barcodes.value = barcodes
     }
 }

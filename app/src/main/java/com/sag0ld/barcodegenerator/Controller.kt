@@ -1,16 +1,16 @@
 package com.sag0ld.barcodegenerator
 
 import android.graphics.Bitmap
-import com.sag0ld.barcodegenerator.barcodes.Barcode
+import com.sag0ld.barcodegenerator.barcodes.AbstractBarcode
 import java.util.*
 
 class Controller private constructor(){
     private object Holder { val INSTANCE = Controller()}
-    private var barcode : Barcode? = null
+    private var barcode : AbstractBarcode? = null
     private var createAt: Calendar? = null
 
     companion object {
-        val instance : Controller by lazy {Holder.INSTANCE}
+        val instance : Controller by lazy { Holder.INSTANCE }
     }
 
     fun createBarcodeBox(type: String) {
@@ -35,5 +35,9 @@ class Controller private constructor(){
 
     fun getBarcodeDescription(): String? {
         return barcode?.description
+    }
+
+    fun getBarcode(): AbstractBarcode? {
+        return barcode
     }
 }

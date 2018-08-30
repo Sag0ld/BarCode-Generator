@@ -3,17 +3,19 @@ package com.sag0ld.barcodegenerator
 import android.graphics.Bitmap
 import android.os.AsyncTask
 import android.view.View
-import android.widget.EditText
 import android.widget.FrameLayout
-import android.widget.ImageView
-import android.widget.RelativeLayout
 import java.lang.reflect.InvocationTargetException
 
-class GenerateBarcodeTask (private val holder : FrameLayout, private val barcodeView : ImageView)
+class GenerateBarcodeTask (private val holder : FrameLayout)
     : AsyncTask<String, Int, Unit>() {
+
+    companion object {
+        var listener: AsyncResponse? = null
+    }
 
     private var mException: Exception? = null
     private lateinit var mBitmap: Bitmap
+
 
     override fun onPreExecute() {
         super.onPreExecute()
@@ -26,7 +28,7 @@ class GenerateBarcodeTask (private val holder : FrameLayout, private val barcode
         } else {
             // Hide progressBar
             holder.visibility = View.GONE
-            barcodeView.setImageBitmap(mBitmap)
+            listener?.processFinish(mBitmap)
         }
     }
 
@@ -41,4 +43,8 @@ class GenerateBarcodeTask (private val holder : FrameLayout, private val barcode
             mException = exception
         }
     }
+}
+
+interface AsyncResponse {
+    fun processFinish(output: Bitmap)
 }

@@ -1,39 +1,54 @@
 package com.sag0ld.barcodegenerator.views
 
 import android.content.Context
+import android.content.ContextWrapper
+import android.graphics.Bitmap
 import android.graphics.Color
+import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
 import android.support.v4.app.Fragment
 import android.text.*
 import android.text.style.ForegroundColorSpan
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import android.widget.*
-import com.sag0ld.barcodegenerator.Controller
-import com.sag0ld.barcodegenerator.GenerateBarcodeTask
+import com.sag0ld.barcodegenerator.*
 
-import com.sag0ld.barcodegenerator.R
+import com.sag0ld.barcodegenerator.barcodes.AbstractBarcode
+import com.sag0ld.barcodegenerator.database.AppDatabase
+import com.sag0ld.barcodegenerator.database.Barcode
 import kotlinx.android.synthetic.main.fragment_generate_barcode.*
+import java.io.File
+import java.io.FileOutputStream
+import java.io.IOException
+import java.io.OutputStream
+import java.util.*
 
-private const val ARG_PARAM1 = "param1"
-private const val ARG_PARAM2 = "param2"
+class GenerateBarcodeFragment : Fragment(), AsyncResponse {
 
-class GenerateBarcodeFragment : Fragment() {
     private var listener: OnGenerateBarcodeFragmentListener? = null
     private val errorsMessages = StringBuilder()
     private var contentEditText : EditText? = null
+    private var currentBarcode: AbstractBarcode? = null
 
     companion object {
         val TAG = GenerateBarcodeFragment.javaClass.canonicalName
     }
 
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setHasOptionsMenu(true)
+        GenerateBarcodeTask.listener = this
+    }
+
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
 
-        val view = inflater.inflate(R.layout.fragment_generate_barcode, container, false)
+        return inflater.inflate(R.layout.fragment_generate_barcode, container, false)
+    }
 
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
         contentEditText = contentTextInputLayout?.editText
 
         val adapter : ArrayAdapter<CharSequence> = ArrayAdapter.createFromResource(context,
@@ -67,10 +82,10 @@ class GenerateBarcodeFragment : Fragment() {
 
                     val content = it.text.toString()
 
-                    // Generate a Barcode
+                    // Generate a AbstractBarcode
                     if (isValid(type, content)) {
                         try {
-                            GenerateBarcodeTask(progressBarHolder, barcodeView)
+                            GenerateBarcodeTask(progressBarHolder)
                                     .execute(type, content)
                         } catch (e: Exception) {
                             // Show errors message from API
@@ -114,14 +129,14 @@ class GenerateBarcodeFragment : Fragment() {
             override fun onTextChanged(content: CharSequence?, start: Int, before: Int, count: Int) {
                 val type = barcodeTypeSpinner.selectedItem.toString()
 
-                // Generate a Barcode and set the imageView
+                // Generate a AbstractBarcode and set the imageView
                 if (isValid(type, content.toString())) {
                     try {
                         if (type == "Code 128" || type == "QR Code") {
                             handler.removeCallbacks(inputFinishChecker)
                         }
                         else {
-                            GenerateBarcodeTask(progressBarHolder, barcodeView)
+                            GenerateBarcodeTask(progressBarHolder)
                                     .execute(type, content?.toString())
                         }
                     } catch (e: Exception) {
@@ -140,8 +155,6 @@ class GenerateBarcodeFragment : Fragment() {
 
             override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) { }
         })
-
-        return view
     }
 
     override fun onAttach(context: Context) {
@@ -156,6 +169,61 @@ class GenerateBarcodeFragment : Fragment() {
     override fun onDetach() {
         super.onDetach()
         listener = null
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu?, inflater: MenuInflater?) {
+        inflater?.inflate(R.menu.generate_barcode_menu, menu)
+        super.onCreateOptionsMenu(menu, inflater)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem?): Boolean {
+        when (item?.itemId) {
+            R.id.action_save_barcode -> {
+                currentBarcode?.let {
+                    saveToDatabase(it)
+                }
+            }
+        }
+        return super.onOptionsItemSelected(item)
+    }
+
+    override fun processFinish(output: Bitmap) {
+        Toast.makeText(context, "SET", Toast.LENGTH_SHORT).show()
+        barcodeView.setImageBitmap(output)
+        currentBarcode = Controller.instance.getBarcode()
+    }
+
+    private fun bitmapToFile(bitmap: Bitmap): Uri {
+        val wrapper = ContextWrapper(context)
+
+        // Initialize a new file instance to save bitmap object
+        var file = wrapper.getDir("Images",Context.MODE_PRIVATE)
+        file = File(file,"${UUID.randomUUID()}.jpg")
+
+        try{
+            val stream: OutputStream = FileOutputStream(file)
+            bitmap.compress(Bitmap.CompressFormat.JPEG,100,stream)
+            stream.flush()
+            stream.close()
+        }catch (e: IOException){
+            e.printStackTrace()
+        }
+
+        // Return the saved bitmap uri
+        return Uri.parse(file.absolutePath)
+    }
+
+    private fun saveToDatabase(currentBarcode: AbstractBarcode) {
+        currentBarcode.generate()?.let { bitmap ->
+            val barcode = Barcode()
+            barcode.content = currentBarcode.content
+            barcode.createAt = currentBarcode.createAt?.timeInMillis
+
+            barcode.uri = bitmapToFile(bitmap).path
+            context?.let {
+                AppDatabase.getAppDatabase(it).userDao().insert(barcode)
+            }
+        }
     }
 
     fun getMaxLength()  : Int {
@@ -179,7 +247,7 @@ class GenerateBarcodeFragment : Fragment() {
 
         val length = contentEditText.length()
         if (length > 0) {
-            // Set the max length for the Barcode type selected
+            // Set the max length for the AbstractBarcode type selected
             val maxLength = getMaxLength()
 
             counter.append("$length/$maxLength")
@@ -249,29 +317,13 @@ class GenerateBarcodeFragment : Fragment() {
         if (System.currentTimeMillis() > lastTextEdit + delay - 500) {
             contentEditText?.let {
                 if (isValid(type, it.text.toString())) {
-                    GenerateBarcodeTask(progressBarHolder, barcodeView)
+                    GenerateBarcodeTask(progressBarHolder)
                             .execute(type, it.text.toString())
+
                 }
             }
         }
     }
 
-    private fun toggleQRInformation(show: Boolean) {
-
-    }
-
-    /**
-     * This interface must be implemented by activities that contain this
-     * fragment to allow an interaction in this fragment to be communicated
-     * to the activity and potentially other fragments contained in that
-     * activity.
-     *
-     *
-     * See the Android Training lesson [Communicating with Other Fragments]
-     * (http://developer.android.com/training/basics/fragments/communicating.html)
-     * for more information.
-     */
-    interface OnGenerateBarcodeFragmentListener {
-    }
-
+    interface OnGenerateBarcodeFragmentListener
 }
