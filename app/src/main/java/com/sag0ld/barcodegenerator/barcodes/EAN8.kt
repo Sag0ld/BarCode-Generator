@@ -7,6 +7,11 @@ import com.sag0ld.barcodegenerator.barcodes.AbstractBarcode
 import java.util.*
 
 class EAN8 (override var content: String?, override var createAt: Calendar?) : AbstractBarcode() {
+
+    companion object {
+        val TYPE = "EAN-8"
+    }
+
     override var description: String = App.instance.applicationContext.getString(R.string.ean8_description)
 
     override fun generate(): Bitmap {

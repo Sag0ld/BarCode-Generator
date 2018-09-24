@@ -3,6 +3,8 @@ package com.sag0ld.barcodegenerator.barcodes
 import android.graphics.Bitmap
 import android.graphics.Color
 import com.google.zxing.common.BitMatrix
+import com.sag0ld.barcodegenerator.App
+import com.sag0ld.barcodegenerator.R
 import java.util.*
 
 abstract class AbstractBarcode {
@@ -14,6 +16,10 @@ abstract class AbstractBarcode {
     abstract var createAt : Calendar?
     abstract fun generate () : Bitmap?
     abstract override fun toString () : String
+
+    companion object {
+        val TYPE = "Abstract"
+    }
 
     /**
      * Writes the given Matrix on a new Bitmap object.
@@ -28,7 +34,7 @@ abstract class AbstractBarcode {
 
         for (x in 0 .. (width - 1)) {
             for(y in 0 .. (height - 1)) {
-                bmp.setPixel(x,y,if (matrix.get(x, y)) Color.BLACK else Color.WHITE)
+                bmp.setPixel(x,y,if (matrix.get(x, y)) App.instance.resources.getColor(R.color.brown) else Color.TRANSPARENT)
             }
         }
 

@@ -5,7 +5,7 @@ import com.sag0ld.barcodegenerator.barcodes.AbstractBarcode
 import java.util.*
 
 class Controller private constructor(){
-    private object Holder { val INSTANCE = Controller()}
+    private object Holder { val INSTANCE = Controller() }
     private var barcode : AbstractBarcode? = null
     private var createAt: Calendar? = null
 

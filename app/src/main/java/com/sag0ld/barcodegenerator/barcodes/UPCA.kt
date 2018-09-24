@@ -8,6 +8,10 @@ import java.util.*
 
 class UPCA (override var content: String?, override var createAt: Calendar?) : AbstractBarcode() {
 
+    companion object {
+        val TYPE = "UPC-A"
+    }
+
     override var description: String = App.instance.applicationContext.getString(R.string.upca_description)
 
     override fun generate(): Bitmap {

@@ -4,7 +4,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:id="@+id/main_layout">
+    android:id="@+id/main_layout" >
 
     <RelativeLayout
         android:layout_width="match_parent"
@@ -12,10 +12,11 @@
 
         <ImageView
             android:id="@+id/barcodeView"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_width="200dp"
+            android:layout_height="200dp"
             android:layout_margin="10dp"
-            app:srcCompat="@mipmap/ic_launcher" />
+            android:layout_centerHorizontal="true"
+            app:srcCompat="@drawable/ic_qr_color" />
 
         <TextView
             android:id="@+id/spinnerLabel"

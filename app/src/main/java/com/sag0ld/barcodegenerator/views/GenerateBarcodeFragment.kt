@@ -1,5 +1,6 @@
 package com.sag0ld.barcodegenerator.views
 
+import android.arch.lifecycle.LiveData
 import android.content.Context
 import android.content.ContextWrapper
 import android.graphics.Bitmap
@@ -15,14 +16,8 @@ import android.widget.*
 import com.sag0ld.barcodegenerator.*
 
 import com.sag0ld.barcodegenerator.barcodes.AbstractBarcode
-import com.sag0ld.barcodegenerator.database.AppDatabase
 import com.sag0ld.barcodegenerator.database.Barcode
 import kotlinx.android.synthetic.main.fragment_generate_barcode.*
-import java.io.File
-import java.io.FileOutputStream
-import java.io.IOException
-import java.io.OutputStream
-import java.util.*
 
 class GenerateBarcodeFragment : Fragment(), AsyncResponse {
 
@@ -43,7 +38,6 @@ class GenerateBarcodeFragment : Fragment(), AsyncResponse {
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
-
         return inflater.inflate(R.layout.fragment_generate_barcode, container, false)
     }
 
@@ -193,37 +187,9 @@ class GenerateBarcodeFragment : Fragment(), AsyncResponse {
         currentBarcode = Controller.instance.getBarcode()
     }
 
-    private fun bitmapToFile(bitmap: Bitmap): Uri {
-        val wrapper = ContextWrapper(context)
-
-        // Initialize a new file instance to save bitmap object
-        var file = wrapper.getDir("Images",Context.MODE_PRIVATE)
-        file = File(file,"${UUID.randomUUID()}.jpg")
-
-        try{
-            val stream: OutputStream = FileOutputStream(file)
-            bitmap.compress(Bitmap.CompressFormat.JPEG,100,stream)
-            stream.flush()
-            stream.close()
-        }catch (e: IOException){
-            e.printStackTrace()
-        }
-
-        // Return the saved bitmap uri
-        return Uri.parse(file.absolutePath)
-    }
-
     private fun saveToDatabase(currentBarcode: AbstractBarcode) {
-        currentBarcode.generate()?.let { bitmap ->
-            val barcode = Barcode()
-            barcode.content = currentBarcode.content
-            barcode.createAt = currentBarcode.createAt?.timeInMillis
-
-            barcode.uri = bitmapToFile(bitmap).path
-            context?.let {
-                AppDatabase.getAppDatabase(it).userDao().insert(barcode)
-            }
-        }
+        Toast.makeText(context, "SAVE", Toast.LENGTH_SHORT).show()
+        listener?.addBarcode(currentBarcode)
     }
 
     fun getMaxLength()  : Int {
@@ -325,5 +291,8 @@ class GenerateBarcodeFragment : Fragment(), AsyncResponse {
         }
     }
 
-    interface OnGenerateBarcodeFragmentListener
+    interface OnGenerateBarcodeFragmentListener {
+        fun addBarcode(barcode: AbstractBarcode)
+        fun getBarcodes(): LiveData<List<Barcode>>
+    }
 }

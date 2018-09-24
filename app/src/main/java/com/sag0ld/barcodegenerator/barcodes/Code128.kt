@@ -7,6 +7,11 @@ import com.sag0ld.barcodegenerator.barcodes.AbstractBarcode
 import java.util.*
 
 class Code128(override var content: String?, override var createAt: Calendar?) : AbstractBarcode() {
+
+    companion object {
+        val TYPE = "Code 128"
+    }
+
     override var description: String = App.instance.applicationContext.getString(R.string.code128_description)
 
     override fun generate(): Bitmap {

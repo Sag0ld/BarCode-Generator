@@ -9,5 +9,14 @@
         android:id="@+id/barcodeRecyclerView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        tools:listitem="@layout/item_barcode"/>
+        tools:listitem="@layout/item_barcode" />
+
+    <TextView
+        android:id="@+id/noContentTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/no_content"
+        android:layout_gravity="center"
+        android:textSize="18sp"
+        android:visibility="gone"/>
 </FrameLayout>

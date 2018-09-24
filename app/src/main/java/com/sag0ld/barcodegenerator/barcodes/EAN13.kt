@@ -11,6 +11,10 @@ import java.util.*
  */
 class EAN13(override var content: String?, override var createAt: Calendar?) : AbstractBarcode() {
 
+    companion object {
+        val TYPE = "EAN-13"
+    }
+
     override var description: String = App.instance.applicationContext.getString(R.string.ean13_description)
 
     override fun generate(): Bitmap {

@@ -7,45 +7,58 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import com.bumptech.glide.Glide
+import android.view.LayoutInflater
+import android.widget.Toast
 import com.sag0ld.barcodegenerator.database.Barcode
 import java.util.*
 
-class BarcodeAdapter(val context: Context): RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+class BarcodeAdapter(val context: Context): RecyclerView.Adapter<BarcodeAdapter.BarcodeViewHolder>() {
 
-    var barcodes = mutableListOf<Barcode>()
+    var barcodes = ArrayList<Barcode>()
         set(value) {
             field = value
             notifyDataSetChanged()
         }
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
-        return BarcodeViewHolder(parent)
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BarcodeViewHolder {
+        val inflater = LayoutInflater.from(parent.context)
+        val v = inflater.inflate(R.layout.item_barcode, parent, false)
+        return BarcodeViewHolder(v)
     }
 
     override fun getItemCount(): Int {
         return barcodes.size
     }
 
-    override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
-        (holder as BarcodeViewHolder).bind(barcodes[position])
+    override fun onBindViewHolder(holder: BarcodeViewHolder, position: Int) {
+        holder.bind(barcodes[position])
+        holder.view.setOnClickListener {
+            Toast.makeText(context,"postion"+position, Toast.LENGTH_SHORT).show()
+        }
     }
 
-    inner class BarcodeViewHolder(view: View): RecyclerView.ViewHolder(view) {
+    inner class BarcodeViewHolder(val view: View): RecyclerView.ViewHolder(view) {
 
         val barcodeImageView = view.findViewById<ImageView>(R.id.barcodeImageView)
         val barcodeContentTextView = view.findViewById<TextView>(R.id.barcodeContentTextView)
         val createAtTextView = view.findViewById<TextView>(R.id.createAtTextView)
+        val barcodeTypeTextView = view.findViewById<TextView>(R.id.barcodeTypeTextView)
 
         fun bind(barcode: Barcode) {
-            Glide.with(context)
-                    .load(barcode.uri)
-                    .into(barcodeImageView)
-            barcodeContentTextView.text = barcode.content
-            barcode.createAt?.let {
-                val cal = Calendar.getInstance()
-                cal.timeInMillis = it
-                createAtTextView.text = cal.time.toString()
+            if (barcode.isQrCode()) {
+                Glide.with(context)
+                        .load(R.drawable.ic_qr_code)
+                        .into(barcodeImageView)
             }
+            else {
+                Glide.with(context)
+                        .load(R.drawable.ic_product_barcode)
+                        .into(barcodeImageView)
+            }
+
+            barcodeContentTextView.text = barcode.content
+            barcodeTypeTextView.text = barcode.type
+            createAtTextView.text = barcode.createAttoString()
         }
     }
 }

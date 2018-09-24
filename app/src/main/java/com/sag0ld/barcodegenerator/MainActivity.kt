@@ -1,25 +1,27 @@
 package com.sag0ld.barcodegenerator
 
 import android.arch.lifecycle.LiveData
-import android.arch.lifecycle.Observer
 import android.os.Bundle
 import android.support.design.widget.NavigationView
 import android.support.v4.view.GravityCompat
 import android.support.v7.app.ActionBarDrawerToggle
 import android.support.v7.app.AppCompatActivity
 import android.view.MenuItem
+import com.sag0ld.barcodegenerator.barcodes.AbstractBarcode
 import com.sag0ld.barcodegenerator.views.GenerateBarcodeFragment
 import com.sag0ld.barcodegenerator.views.HistoryFragment
 import kotlinx.android.synthetic.main.activity_main2.*
 import kotlinx.android.synthetic.main.app_bar_main2.*
+import android.arch.lifecycle.ViewModelProviders
 import com.sag0ld.barcodegenerator.database.Barcode
-import com.sag0ld.barcodegenerator.database.AppDatabase
+import com.sag0ld.barcodegenerator.viewModels.BarcodeViewModel
+
 
 class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener, GenerateBarcodeFragment.OnGenerateBarcodeFragmentListener, HistoryFragment.OnFragmentInteractionListener {
 
     private val generateFragment = GenerateBarcodeFragment()
     private val historyFragment = HistoryFragment()
-    private lateinit var barcodes: LiveData<List<Barcode>>
+    private lateinit var model: BarcodeViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -38,12 +40,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         transaction.add(fragment_holder.id, generateFragment, GenerateBarcodeFragment.TAG)
         transaction.commit()
 
-        barcodes = AppDatabase.getAppDatabase(this).userDao().getAll()
-        barcodes.observe(this, Observer<List<Barcode>> {
-            it?.let {
-                updateHistories(it)
-            }
-        })
+        model = ViewModelProviders.of(this).get(BarcodeViewModel::class.java)
     }
 
     override fun onBackPressed() {
@@ -79,7 +76,19 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         return true
     }
 
-    fun updateHistories(barcodes: List<Barcode>) {
-        historyFragment.barcodes.value = barcodes
+    override fun getBarcodes(): LiveData<List<Barcode>> {
+        return model.getBarcodes()
+    }
+
+    override fun addBarcode(abstractBarcode: AbstractBarcode) {
+        abstractBarcode.generate()?.let { bitmap ->
+            val barcode = Barcode()
+            barcode.content = abstractBarcode.content
+            barcode.createAt = abstractBarcode.createAt?.timeInMillis
+            barcode.uri = BGUtils.bitmapToFile(bitmap).path
+            barcode.type = abstractBarcode.toString()
+
+            model.addBarcode(barcode)
+        }
     }
 }

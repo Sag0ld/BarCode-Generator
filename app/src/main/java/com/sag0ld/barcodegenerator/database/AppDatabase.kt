@@ -7,11 +7,11 @@ import android.content.Context
 
 @Database(entities = [(Barcode::class)], version = 1)
 abstract class AppDatabase: RoomDatabase() {
-    abstract fun userDao(): BarcodeDao
+    abstract fun barcodeDao(): BarcodeDao
 
     companion object {
         private var INSTANCE: AppDatabase? = null
-        private val DATABASE_NAME = "Database"
+        private val DATABASE_NAME = "BarcodeGenerator_Database"
 
         fun getAppDatabase(context: Context): AppDatabase {
             if (INSTANCE == null) {
