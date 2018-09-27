@@ -85,7 +85,6 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             val barcode = Barcode()
             barcode.content = abstractBarcode.content
             barcode.createAt = abstractBarcode.createAt?.timeInMillis
-            barcode.uri = BGUtils.bitmapToFile(bitmap).path
             barcode.type = abstractBarcode.toString()
 
             model.addBarcode(barcode)

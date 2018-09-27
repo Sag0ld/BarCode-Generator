@@ -20,8 +20,11 @@ class Barcode : ViewModel() {
     @ColumnInfo(name = "content")
     var content: String? = null
 
-    @ColumnInfo(name = "uri")
-    var uri: String? = null
+    //@ColumnInfo(name = "uri")
+    //var uri: String? = null
+
+    @ColumnInfo(name = "isFromScanner")
+    var isFromScanner: Boolean = false
 
     @ColumnInfo(name = "create_at")
     var createAt: Long? = null
@@ -35,9 +38,21 @@ class Barcode : ViewModel() {
         return false
     }
 
-    fun createAttoString(): String {
+    @Ignore
+    fun createAtDatetoString(): String {
         createAt?.let {
-            val format1 = SimpleDateFormat("dd MMMMM yyyy \\ HH:mm:ss")
+            val format1 = SimpleDateFormat("dd MMMMMM yyyy")
+            val cal = Calendar.getInstance()
+            cal.timeInMillis = it
+
+            return format1.format(cal.time)
+        }
+        return ""
+    }
+    @Ignore
+    fun createAtHourtoString() : String {
+        createAt?.let {
+            val format1 = SimpleDateFormat("HH:mm:ss")
             val cal = Calendar.getInstance()
             cal.timeInMillis = it
 

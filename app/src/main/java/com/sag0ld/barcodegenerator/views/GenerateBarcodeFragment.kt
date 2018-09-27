@@ -2,10 +2,8 @@ package com.sag0ld.barcodegenerator.views
 
 import android.arch.lifecycle.LiveData
 import android.content.Context
-import android.content.ContextWrapper
 import android.graphics.Bitmap
 import android.graphics.Color
-import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
 import android.support.v4.app.Fragment
@@ -13,13 +11,14 @@ import android.text.*
 import android.text.style.ForegroundColorSpan
 import android.view.*
 import android.widget.*
+import com.bumptech.glide.Glide
 import com.sag0ld.barcodegenerator.*
 
 import com.sag0ld.barcodegenerator.barcodes.AbstractBarcode
 import com.sag0ld.barcodegenerator.database.Barcode
 import kotlinx.android.synthetic.main.fragment_generate_barcode.*
 
-class GenerateBarcodeFragment : Fragment(), AsyncResponse {
+class GenerateBarcodeFragment : Fragment() {
 
     private var listener: OnGenerateBarcodeFragmentListener? = null
     private val errorsMessages = StringBuilder()
@@ -33,7 +32,6 @@ class GenerateBarcodeFragment : Fragment(), AsyncResponse {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setHasOptionsMenu(true)
-        GenerateBarcodeTask.listener = this
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
@@ -43,12 +41,18 @@ class GenerateBarcodeFragment : Fragment(), AsyncResponse {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        saveButton?.setOnClickListener {
+
+        }
+
         contentEditText = contentTextInputLayout?.editText
 
         val adapter : ArrayAdapter<CharSequence> = ArrayAdapter.createFromResource(context,
                 R.array.type_of_barcode,android.R.layout.simple_spinner_item)
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
         barcodeTypeSpinner?.adapter = adapter
+
+        var fragmentContext = context
 
         barcodeTypeSpinner?.onItemSelectedListener = object: AdapterView.OnItemSelectedListener {
             override fun onNothingSelected(p0: AdapterView<*>?) { }
@@ -79,8 +83,7 @@ class GenerateBarcodeFragment : Fragment(), AsyncResponse {
                     // Generate a AbstractBarcode
                     if (isValid(type, content)) {
                         try {
-                            GenerateBarcodeTask(progressBarHolder)
-                                    .execute(type, content)
+                            updateBarcodeImageViewSource(type, content)
                         } catch (e: Exception) {
                             // Show errors message from API
                             Toast.makeText(context, e.toString(),
@@ -130,8 +133,9 @@ class GenerateBarcodeFragment : Fragment(), AsyncResponse {
                             handler.removeCallbacks(inputFinishChecker)
                         }
                         else {
-                            GenerateBarcodeTask(progressBarHolder)
-                                    .execute(type, content?.toString())
+                            content?.let { content ->
+                                updateBarcodeImageViewSource(type, content.toString())
+                            }
                         }
                     } catch (e: Exception) {
                         // Show errors message from API
@@ -172,23 +176,17 @@ class GenerateBarcodeFragment : Fragment(), AsyncResponse {
 
     override fun onOptionsItemSelected(item: MenuItem?): Boolean {
         when (item?.itemId) {
-            R.id.action_save_barcode -> {
-                currentBarcode?.let {
+            R.id.action_scan_code -> {
+                Toast.makeText(context, "Switch to scanner", Toast.LENGTH_SHORT).show()
+/*                currentBarcode?.let {
                     saveToDatabase(it)
-                }
+                } */
             }
         }
         return super.onOptionsItemSelected(item)
     }
 
-    override fun processFinish(output: Bitmap) {
-        Toast.makeText(context, "SET", Toast.LENGTH_SHORT).show()
-        barcodeView.setImageBitmap(output)
-        currentBarcode = Controller.instance.getBarcode()
-    }
-
     private fun saveToDatabase(currentBarcode: AbstractBarcode) {
-        Toast.makeText(context, "SAVE", Toast.LENGTH_SHORT).show()
         listener?.addBarcode(currentBarcode)
     }
 
@@ -278,14 +276,22 @@ class GenerateBarcodeFragment : Fragment(), AsyncResponse {
     var lastTextEdit: Long = 0
     var handler = Handler()
 
+    private fun updateBarcodeImageViewSource(type: String, content: String) {
+        context?.let { context ->
+            Glide.with(context)
+                .load(Controller.instance.generateBarcode(type, content))
+                .into(barcodeImageView)
+        }
+
+        currentBarcode = Controller.instance.getBarcode()
+    }
+
     private val inputFinishChecker = Runnable {
         val type = barcodeTypeSpinner.selectedItem.toString()
         if (System.currentTimeMillis() > lastTextEdit + delay - 500) {
             contentEditText?.let {
                 if (isValid(type, it.text.toString())) {
-                    GenerateBarcodeTask(progressBarHolder)
-                            .execute(type, it.text.toString())
-
+                    updateBarcodeImageViewSource(type, it.text.toString())
                 }
             }
         }

@@ -8,11 +8,12 @@ import android.widget.ImageView
 import android.widget.TextView
 import com.bumptech.glide.Glide
 import android.view.LayoutInflater
-import android.widget.Toast
 import com.sag0ld.barcodegenerator.database.Barcode
 import java.util.*
 
 class BarcodeAdapter(val context: Context): RecyclerView.Adapter<BarcodeAdapter.BarcodeViewHolder>() {
+
+    var listener: IHistoryFragementListener? = null
 
     var barcodes = ArrayList<Barcode>()
         set(value) {
@@ -33,7 +34,7 @@ class BarcodeAdapter(val context: Context): RecyclerView.Adapter<BarcodeAdapter.
     override fun onBindViewHolder(holder: BarcodeViewHolder, position: Int) {
         holder.bind(barcodes[position])
         holder.view.setOnClickListener {
-            Toast.makeText(context,"postion"+position, Toast.LENGTH_SHORT).show()
+            listener?.showCodeInformation(barcodes[position])
         }
     }
 
@@ -41,8 +42,9 @@ class BarcodeAdapter(val context: Context): RecyclerView.Adapter<BarcodeAdapter.
 
         val barcodeImageView = view.findViewById<ImageView>(R.id.barcodeImageView)
         val barcodeContentTextView = view.findViewById<TextView>(R.id.barcodeContentTextView)
-        val createAtTextView = view.findViewById<TextView>(R.id.createAtTextView)
+        val createAtDateTextView = view.findViewById<TextView>(R.id.createAtDateTextView)
         val barcodeTypeTextView = view.findViewById<TextView>(R.id.barcodeTypeTextView)
+        val createAtHoursTextView = view.findViewById<TextView>(R.id.createAtHoursTextView)
 
         fun bind(barcode: Barcode) {
             if (barcode.isQrCode()) {
@@ -58,7 +60,12 @@ class BarcodeAdapter(val context: Context): RecyclerView.Adapter<BarcodeAdapter.
 
             barcodeContentTextView.text = barcode.content
             barcodeTypeTextView.text = barcode.type
-            createAtTextView.text = barcode.createAttoString()
+            createAtDateTextView.text = barcode.createAtDatetoString()
+            createAtHoursTextView.text = barcode.createAtHourtoString()
         }
     }
+}
+
+interface IHistoryFragementListener {
+    fun showCodeInformation(barcode: Barcode)
 }

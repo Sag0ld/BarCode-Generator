@@ -1,38 +1,54 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout
+<RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/main_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:id="@+id/main_layout" >
+    android:orientation="vertical" >
 
     <RelativeLayout
+        android:id="@+id/codeGenerationLayout"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="200dp"
+        android:elevation="2dp"
+        android:background="#ffffff"
+        android:gravity="center">
 
         <ImageView
-            android:id="@+id/barcodeView"
+            android:id="@+id/barcodeImageView"
             android:layout_width="200dp"
             android:layout_height="200dp"
             android:layout_margin="10dp"
             android:layout_centerHorizontal="true"
-            app:srcCompat="@drawable/ic_qr_color" />
+            app:srcCompat="@drawable/ic_qr_color"/>
 
-        <TextView
+        <ProgressBar
+            android:id="@+id/progressBarHolder"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_centerInParent="true"
+            android:visibility="gone"/>
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_margin="10dp"
+        android:layout_below="@id/codeGenerationLayout">
+
+         <TextView
             android:id="@+id/spinnerLabel"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/spinner_label"
-            android:layout_below="@id/barcodeView"
-            />
+            android:text="@string/spinner_label" />
 
         <Spinner
             android:id="@+id/barcodeTypeSpinner"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@id/barcodeView"
-            android:layout_toRightOf="@id/spinnerLabel"
-            />
+            android:layout_toRightOf="@id/spinnerLabel" />
 
         <TextView
             android:id="@+id/typeDescription"
@@ -55,32 +71,18 @@
                 android:inputType="number" />
 
         </android.support.design.widget.TextInputLayout>
-
     </RelativeLayout>
 
-
-    <FrameLayout
-        android:id="@+id/progressBarHolder"
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/saveButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        app:layout_constraintTop_toBottomOf="parent"
-        app:layout_constraintBottom_toTopOf="parent"
-        app:layout_constraintLeft_toRightOf="parent"
-        app:layout_constraintRight_toLeftOf="parent"
-        android:visibility="gone">
-
-        <TextView
-            android:id="@+id/textViewTitle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/dialog_title" />
-
-        <ProgressBar
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:layout_marginTop="20dp"
-            style="?android:attr/progressBarStyleLarge"/>
-    </FrameLayout>
-
-</android.support.constraint.ConstraintLayout>
+        android:layout_alignParentEnd="true"
+        android:layout_alignBottom="@+id/codeGenerationLayout"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="-25dp"
+        android:elevation="4dp"
+        android:clickable="true"
+        android:focusable="true"
+        app:srcCompat="@drawable/ic_save" />
+</RelativeLayout>
