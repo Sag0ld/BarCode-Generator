@@ -23,8 +23,8 @@ class BarcodeAdapter(val context: Context): RecyclerView.Adapter<BarcodeAdapter.
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BarcodeViewHolder {
         val inflater = LayoutInflater.from(parent.context)
-        val v = inflater.inflate(R.layout.item_barcode, parent, false)
-        return BarcodeViewHolder(v)
+        val view = inflater.inflate(R.layout.item_barcode, parent, false)
+        return BarcodeViewHolder(view)
     }
 
     override fun getItemCount(): Int {
@@ -41,9 +41,9 @@ class BarcodeAdapter(val context: Context): RecyclerView.Adapter<BarcodeAdapter.
     inner class BarcodeViewHolder(val view: View): RecyclerView.ViewHolder(view) {
 
         val barcodeImageView = view.findViewById<ImageView>(R.id.barcodeImageView)
+        val barcodeTypeTextView = view.findViewById<TextView>(R.id.barcodeTypeTextView)
         val barcodeContentTextView = view.findViewById<TextView>(R.id.barcodeContentTextView)
         val createAtDateTextView = view.findViewById<TextView>(R.id.createAtDateTextView)
-        val barcodeTypeTextView = view.findViewById<TextView>(R.id.barcodeTypeTextView)
         val createAtHoursTextView = view.findViewById<TextView>(R.id.createAtHoursTextView)
 
         fun bind(barcode: Barcode) {
@@ -58,8 +58,8 @@ class BarcodeAdapter(val context: Context): RecyclerView.Adapter<BarcodeAdapter.
                         .into(barcodeImageView)
             }
 
-            barcodeContentTextView.text = barcode.content
             barcodeTypeTextView.text = barcode.type
+            barcodeContentTextView.text = barcode.content
             createAtDateTextView.text = barcode.createAtDatetoString()
             createAtHoursTextView.text = barcode.createAtHourtoString()
         }
