@@ -1,16 +1,18 @@
 package com.sag0ld.barcodegenerator
 
-import android.content.res.Resources
 import android.graphics.Bitmap
 import com.google.zxing.BarcodeFormat
 import com.google.zxing.oned.UPCAWriter
+import com.sag0ld.barcodegenerator.barcodes.AbstractBarcode
+import java.util.*
 
-/**
- * Created by Sagold on 2017-08-18.
- */
-class UPCA (override var content: String?) : Barcode() {
+class UPCA (override var content: String?, override var createAt: Calendar?) : AbstractBarcode() {
 
-    override var description: String = App.getContext().getString(R.string.upca_description)
+    companion object {
+        val TYPE = "UPC-A"
+    }
+
+    override var description: String = App.instance.applicationContext.getString(R.string.upca_description)
 
     override fun generate(): Bitmap {
         var barcode = UPCAWriter().encode(content, BarcodeFormat.UPC_A
