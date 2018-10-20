@@ -36,6 +36,10 @@ class BarcodeAdapter(val context: Context): RecyclerView.Adapter<BarcodeAdapter.
         holder.view.setOnClickListener {
             listener?.showCodeInformation(barcodes[position])
         }
+        holder.view.setOnLongClickListener {
+            listener?.deleteCode(barcodes[position])
+            true
+        }
     }
 
     inner class BarcodeViewHolder(val view: View): RecyclerView.ViewHolder(view) {
@@ -68,4 +72,5 @@ class BarcodeAdapter(val context: Context): RecyclerView.Adapter<BarcodeAdapter.
 
 interface IHistoryFragementListener {
     fun showCodeInformation(barcode: Barcode)
+    fun deleteCode(barcode: Barcode)
 }

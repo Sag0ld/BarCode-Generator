@@ -1,8 +1,8 @@
 package com.sag0ld.barcodegenerator.database
 
 import android.arch.lifecycle.MutableLiveData
-import com.sag0ld.barcodegenerator.Code128
-import com.sag0ld.barcodegenerator.QRCode
+import com.sag0ld.barcodegenerator.barcodes.Code128
+import com.sag0ld.barcodegenerator.barcodes.QRCode
 import com.sag0ld.barcodegenerator.barcodes.AbstractBarcode
 import java.util.*
 import kotlin.collections.ArrayList

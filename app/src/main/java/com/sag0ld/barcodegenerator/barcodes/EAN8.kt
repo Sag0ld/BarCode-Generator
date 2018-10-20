@@ -1,9 +1,10 @@
-package com.sag0ld.barcodegenerator
+package com.sag0ld.barcodegenerator.barcodes
 
 import android.graphics.Bitmap
 import com.google.zxing.BarcodeFormat
 import com.google.zxing.oned.EAN8Writer
-import com.sag0ld.barcodegenerator.barcodes.AbstractBarcode
+import com.sag0ld.barcodegenerator.App
+import com.sag0ld.barcodegenerator.R
 import java.util.*
 
 class EAN8 (override var content: String?, override var createAt: Calendar?) : AbstractBarcode() {
@@ -12,7 +13,22 @@ class EAN8 (override var content: String?, override var createAt: Calendar?) : A
         val TYPE = "EAN-8"
     }
 
+    override val maxLength = 7
     override var description: String = App.instance.applicationContext.getString(R.string.ean8_description)
+
+    override fun isValid(content: String): Boolean {
+        if (content.length < maxLength)
+            return false
+        if (content.length > maxLength) {
+            errors.appendln("The content must be $maxLength digit long.")
+            return false
+        }
+        if (content.length == maxLength && !content.matches(Regex("^\\d+$"))) {
+            errors.appendln("The content must be only digit.")
+            return false
+        }
+        return true
+    }
 
     override fun generate(): Bitmap {
         val barcode = EAN8Writer().encode(content, BarcodeFormat.EAN_8, width, height)

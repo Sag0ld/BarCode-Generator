@@ -1,27 +1,20 @@
 package com.sag0ld.barcodegenerator
 
-import android.arch.lifecycle.LiveData
 import android.os.Bundle
 import android.support.design.widget.NavigationView
 import android.support.v4.view.GravityCompat
 import android.support.v7.app.ActionBarDrawerToggle
 import android.support.v7.app.AppCompatActivity
 import android.view.MenuItem
-import com.sag0ld.barcodegenerator.barcodes.AbstractBarcode
 import com.sag0ld.barcodegenerator.views.GenerateBarcodeFragment
 import com.sag0ld.barcodegenerator.views.HistoryFragment
 import kotlinx.android.synthetic.main.activity_main2.*
 import kotlinx.android.synthetic.main.app_bar_main2.*
-import android.arch.lifecycle.ViewModelProviders
-import com.sag0ld.barcodegenerator.database.Barcode
-import com.sag0ld.barcodegenerator.viewModels.BarcodeViewModel
 
-
-class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener, GenerateBarcodeFragment.OnGenerateBarcodeFragmentListener, HistoryFragment.OnFragmentInteractionListener {
+class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
 
     private val generateFragment = GenerateBarcodeFragment()
     private val historyFragment = HistoryFragment()
-    private lateinit var model: BarcodeViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -39,8 +32,6 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         val transaction = supportFragmentManager.beginTransaction()
         transaction.add(fragment_holder.id, generateFragment, GenerateBarcodeFragment.TAG)
         transaction.commit()
-
-        model = ViewModelProviders.of(this).get(BarcodeViewModel::class.java)
     }
 
     override fun onBackPressed() {
@@ -76,18 +67,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         return true
     }
 
-    override fun getBarcodes(): LiveData<List<Barcode>> {
-        return model.getBarcodes()
-    }
+    private fun getContentFromScannedBarcode() {
 
-    override fun addBarcode(abstractBarcode: AbstractBarcode) {
-        abstractBarcode.generate()?.let { bitmap ->
-            val barcode = Barcode()
-            barcode.content = abstractBarcode.content
-            barcode.createAt = abstractBarcode.createAt?.timeInMillis
-            barcode.type = abstractBarcode.toString()
-
-            model.addBarcode(barcode)
-        }
     }
 }
