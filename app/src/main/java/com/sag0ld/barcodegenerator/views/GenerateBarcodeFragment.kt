@@ -114,6 +114,7 @@ class GenerateBarcodeFragment : Fragment() {
 
                 if (!p0.isNullOrEmpty()) {
                     contentEditText?.let { updateCounterMessage(it) }
+                    model?.content = p0.toString()
 
                     val type = barcodeTypeSpinner?.selectedItem.toString()
                     if(type == "Code 128" || type == "QR Code") {
@@ -195,7 +196,7 @@ class GenerateBarcodeFragment : Fragment() {
     private fun saveToDatabase(currentBarcode: AbstractBarcode) {
         model?.let { model ->
             val barcode = Barcode()
-            barcode.content = currentBarcode.content
+            barcode.content = model.content
             barcode.createAt = currentBarcode.createAt?.timeInMillis
             barcode.type = currentBarcode.toString()
 

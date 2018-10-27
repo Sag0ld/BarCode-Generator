@@ -7,7 +7,6 @@ import android.graphics.Bitmap
 import com.sag0ld.barcodegenerator.barcodes.AbstractBarcode
 import com.sag0ld.barcodegenerator.database.Barcode
 import com.sag0ld.barcodegenerator.database.RoomRepository
-import com.sag0ld.barcodegenerator.database.StaticRepository
 
 
 class BarcodeViewModel: ViewModel() {
