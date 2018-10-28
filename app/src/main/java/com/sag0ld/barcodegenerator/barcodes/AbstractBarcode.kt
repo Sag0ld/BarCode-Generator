@@ -8,17 +8,29 @@ import com.sag0ld.barcodegenerator.R
 import java.util.*
 
 abstract class AbstractBarcode {
-    val width = 160 * 5
-    val height = 101 * 3
-
-    abstract var content : String?
-    abstract var description : String
-    abstract var createAt : Calendar?
-    abstract fun generate () : Bitmap?
-    abstract override fun toString () : String
 
     companion object {
         val TYPE = "Abstract"
+    }
+
+    val width = 160 * 5
+    val height = 101 * 3
+    abstract val maxLength: Int
+
+
+    var errors = StringBuilder()
+    abstract var content : String?
+    abstract var description : String
+    abstract var createAt : Calendar?
+
+    abstract fun generate () : Bitmap?
+    abstract fun isValid(content: String): Boolean
+    abstract override fun toString () : String
+
+    fun getErrorsMessage(): String {
+        val tmpErrors = errors.toString()
+        errors.delete(0, errors.length)
+        return tmpErrors
     }
 
     /**

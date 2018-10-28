@@ -1,6 +1,7 @@
 package com.sag0ld.barcodegenerator.database
 
 import android.arch.lifecycle.LiveData
+import android.arch.lifecycle.MutableLiveData
 import com.sag0ld.barcodegenerator.App
 import org.jetbrains.anko.doAsync
 
@@ -17,6 +18,8 @@ class RoomRepository: BarcodeDao {
     }
 
     override fun delete(barcode: Barcode) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        doAsync {
+            AppDatabase.getAppDatabase(App.instance.applicationContext).barcodeDao().delete(barcode)
+        }
     }
 }

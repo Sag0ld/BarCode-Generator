@@ -1,29 +1,34 @@
 package com.sag0ld.barcodegenerator.views
 
-import android.arch.lifecycle.LiveData
-import android.content.Context
+import android.arch.lifecycle.*
+import android.arch.lifecycle.Observer
 import android.graphics.Bitmap
 import android.graphics.Color
 import android.os.Bundle
 import android.os.Handler
+import android.support.design.widget.Snackbar
 import android.support.v4.app.Fragment
 import android.text.*
 import android.text.style.ForegroundColorSpan
 import android.view.*
 import android.widget.*
 import com.bumptech.glide.Glide
+import com.github.jorgecastilloprz.listeners.FABProgressListener
 import com.sag0ld.barcodegenerator.*
+import com.sag0ld.barcodegenerator.R
 
 import com.sag0ld.barcodegenerator.barcodes.AbstractBarcode
 import com.sag0ld.barcodegenerator.database.Barcode
+import com.sag0ld.barcodegenerator.viewModels.BarcodeViewModel
 import kotlinx.android.synthetic.main.fragment_generate_barcode.*
+import org.jetbrains.anko.doAsync
 
-class GenerateBarcodeFragment : Fragment() {
+class GenerateBarcodeFragment : Fragment(), FABProgressListener {
 
-    private var listener: OnGenerateBarcodeFragmentListener? = null
-    private val errorsMessages = StringBuilder()
     private var contentEditText : EditText? = null
-    private var currentBarcode: AbstractBarcode? = null
+    private var model : BarcodeViewModel? = null
+    private var isSaveBtnLocked = false
+    private lateinit var typeAdapter : ArrayAdapter<CharSequence>
 
     companion object {
         val TAG = GenerateBarcodeFragment.javaClass.canonicalName
@@ -32,6 +37,13 @@ class GenerateBarcodeFragment : Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setHasOptionsMenu(true)
+        activity?.let {
+            model = ViewModelProviders.of(it).get(BarcodeViewModel::class.java)
+        }
+
+        typeAdapter = ArrayAdapter.createFromResource(context, R.array.type_of_barcode,
+                                                 android.R.layout.simple_spinner_item)
+        typeAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
@@ -41,81 +53,82 @@ class GenerateBarcodeFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        saveButton?.setOnClickListener {
 
+        saveButton?.setOnClickListener {
+            if (!isSaveBtnLocked) {
+                model?.currentBarcodeLiveData?.value?.let { code ->
+                    isSaveBtnLocked = true
+                    saveButtonProgress.show()
+                    saveButtonProgress.attachListener(this)
+                    saveToDatabase(code)
+                }
+            }
         }
 
-        contentEditText = contentTextInputLayout?.editText
 
-        val adapter : ArrayAdapter<CharSequence> = ArrayAdapter.createFromResource(context,
-                R.array.type_of_barcode,android.R.layout.simple_spinner_item)
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-        barcodeTypeSpinner?.adapter = adapter
-
-        var fragmentContext = context
-
+        barcodeTypeSpinner?.adapter = typeAdapter
         barcodeTypeSpinner?.onItemSelectedListener = object: AdapterView.OnItemSelectedListener {
             override fun onNothingSelected(p0: AdapterView<*>?) { }
 
             override fun onItemSelected(p0: AdapterView<*>?, p1: View?, p2: Int, p3: Long) {
                 val type = barcodeTypeSpinner.selectedItem.toString()
-                Controller.instance.createBarcodeBox(type)
-                typeDescription.text = Controller.instance.getBarcodeDescription()
+                model?.currentBarcodeLiveData?.value = Controller.instance.createBarcodeEntity(type)
+                typeDescription?.text = Controller.instance.getBarcodeDescription()
 
                 when (type) {
                     "QR Code", "Code 128" -> contentEditText?.inputType = InputType.TYPE_CLASS_TEXT
                     else ->  contentEditText?.inputType = InputType.TYPE_CLASS_NUMBER
                 }
 
-                // Trim the content of the editText if is longer
-                val maxLength = getMaxLength()
-                contentEditText?.let {
-                    // Set limit input
-                    val filterArray = arrayOfNulls<InputFilter>(1)
-                    filterArray[0] = InputFilter.LengthFilter(maxLength)
-                    it.filters = filterArray
+                model?.let { model ->
+                   model.currentBarcodeLiveData.value?.let {  barcode ->
+                     val maxLength = barcode.maxLength
+                       contentEditText?.let {
+                           // Set limit input
+                           val filterArray = arrayOfNulls<InputFilter>(1)
+                           filterArray[0] = InputFilter.LengthFilter(maxLength)
+                           it.filters = filterArray
 
-                    // Update the limit of editText
-                    updateCounterMessage(it)
-
-                    val content = it.text.toString()
-
-                    // Generate a AbstractBarcode
-                    if (isValid(type, content)) {
-                        try {
-                            updateBarcodeImageViewSource(type, content)
-                        } catch (e: Exception) {
-                            // Show errors message from API
-                            Toast.makeText(context, e.toString(),
-                                    Toast.LENGTH_SHORT).show()
-                        }
-                    }
-
-                    if (errorsMessages.isNotEmpty()) {
-                        // Show errors messages from the front end
-                        Toast.makeText(context, errorsMessages.toString(),
-                                Toast.LENGTH_SHORT).show()
-                        // Erase messages
-                        errorsMessages.delete(0, errorsMessages.lastIndex + 1)
-                    }
+                           // Update the limit of editText
+                           updateCounterMessage(it)
+                           val content = it.text.toString()
+                           if (content.isNotEmpty()) {
+                               if (barcode.isValid(content)) {
+                                   try {
+                                       updateBarcodeImageViewSource(type, content)
+                                   } catch (e: Exception) {
+                                       // Show errors message from API
+                                       Toast.makeText(context, e.toString(),
+                                               Toast.LENGTH_SHORT).show()
+                                   }
+                               } else if (barcode.errors.isNotEmpty()) {
+                                   Toast.makeText(context, barcode.getErrorsMessage(),
+                                           Toast.LENGTH_SHORT).show()
+                               }
+                           }
+                       }
+                   }
                 }
             }
         }
 
+        contentEditText = contentTextInputLayout?.editText
+
         // Init the content editText event
         contentEditText?.addTextChangedListener( object : TextWatcher {
             override fun afterTextChanged(p0: Editable?) {
+                handler.removeCallbacks(inputFinishChecker)
+
                 if (!p0.isNullOrEmpty()) {
                     contentEditText?.let { updateCounterMessage(it) }
+                    model?.content = p0.toString()
 
-                    val type = barcodeTypeSpinner.selectedItem.toString()
+                    val type = barcodeTypeSpinner?.selectedItem.toString()
                     if(type == "Code 128" || type == "QR Code") {
-                        lastTextEdit = System.currentTimeMillis()
                         try {
                             handler.postDelayed(inputFinishChecker, delay)
                         }
                         catch (e: Exception) {
-                            // Show errors message from API
                             Toast.makeText(context, e.message,
                                     Toast.LENGTH_SHORT).show()
                         }
@@ -124,49 +137,52 @@ class GenerateBarcodeFragment : Fragment() {
             }
 
             override fun onTextChanged(content: CharSequence?, start: Int, before: Int, count: Int) {
-                val type = barcodeTypeSpinner.selectedItem.toString()
-
-                // Generate a AbstractBarcode and set the imageView
-                if (isValid(type, content.toString())) {
-                    try {
-                        if (type == "Code 128" || type == "QR Code") {
-                            handler.removeCallbacks(inputFinishChecker)
-                        }
-                        else {
-                            content?.let { content ->
-                                updateBarcodeImageViewSource(type, content.toString())
+                val type = barcodeTypeSpinner?.selectedItem.toString()
+                content?.let {
+                    // Generate a AbstractBarcode and set the imageView
+                    model?.currentBarcodeLiveData?.value?.let { barcode ->
+                        if (barcode.maxLength == it.length) {
+                            if (barcode.isValid(content.toString())) {
+                                try {
+                                    if (type != "Code 128" || type != "QR Code") {
+                                        updateBarcodeImageViewSource(type, content.toString())
+                                    }
+                                } catch (e: Exception) {
+                                    // Show errors message from API
+                                    Toast.makeText(context, e.message,
+                                            Toast.LENGTH_SHORT).show()
+                                }
+                            } else if (barcode.errors.isNotEmpty()) {
+                                // Show errors messages from the front end
+                                Toast.makeText(context, barcode.getErrorsMessage(),
+                                        Toast.LENGTH_SHORT).show()
                             }
                         }
-                    } catch (e: Exception) {
-                        // Show errors message from API
-                        Toast.makeText(context, e.message,
-                                Toast.LENGTH_SHORT).show()
                     }
-                } else if (errorsMessages.isNotEmpty()) {
-                    // Show errors messages from the front end
-                    Toast.makeText(context, errorsMessages.toString(),
-                            Toast.LENGTH_SHORT).show()
-                    // Erase messages
-                    errorsMessages.delete(0, errorsMessages.lastIndex + 1)
                 }
             }
-
             override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) { }
         })
     }
 
-    override fun onAttach(context: Context) {
-        super.onAttach(context)
-        if (context is OnGenerateBarcodeFragmentListener) {
-            listener = context
-        } else {
-            throw RuntimeException(context.toString() + " must implement OnGenerateBarcodeFragmentListener")
-        }
-    }
+    override fun onResume() {
+        super.onResume()
+        model?.let { model ->
+            model.currentBitmapLiveData.observe(context as LifecycleOwner, Observer<Bitmap> {
+                context?.let { context ->
+                    Glide.with(context)
+                        .load(it)
+                        .into(barcodeImageView)
+                    progressBarHolder?.visibility = View.GONE
+                }
+            })
 
-    override fun onDetach() {
-        super.onDetach()
-        listener = null
+            contentEditText?.setText(model.content)
+            model.currentBarcodeLiveData.value?.let { barcode ->
+                val position = typeAdapter.getPosition(barcode.toString())
+                barcodeTypeSpinner?.setSelection(position)
+            }
+        }
     }
 
     override fun onCreateOptionsMenu(menu: Menu?, inflater: MenuInflater?) {
@@ -178,127 +194,82 @@ class GenerateBarcodeFragment : Fragment() {
         when (item?.itemId) {
             R.id.action_scan_code -> {
                 Toast.makeText(context, "Switch to scanner", Toast.LENGTH_SHORT).show()
-/*                currentBarcode?.let {
-                    saveToDatabase(it)
-                } */
             }
         }
+
         return super.onOptionsItemSelected(item)
     }
 
-    private fun saveToDatabase(currentBarcode: AbstractBarcode) {
-        listener?.addBarcode(currentBarcode)
+    override fun onFABProgressAnimationEnd() {
+        view?.let {
+            Snackbar.make(it, "Saved", Snackbar.LENGTH_SHORT).show()
+        }
+        isSaveBtnLocked = false
     }
 
-    fun getMaxLength()  : Int {
-        val type = barcodeTypeSpinner.selectedItem.toString()
-        val maxLength: Int
-        maxLength = when (type) {
-            "UPC-A" -> 11
-            "UPC-E", "EAN-8" -> 7
-            "EAN-13" -> 12
-            "Code 128" -> 80
-            "QR Code" -> 9999
-            else -> 0
+    private fun saveToDatabase(currentBarcode: AbstractBarcode) {
+        model?.let { model ->
+            val barcode = Barcode()
+            barcode.content = model.content
+            barcode.createAt = currentBarcode.createAt?.timeInMillis
+            barcode.type = currentBarcode.toString()
+
+            model.addBarcode(barcode)
+            saveButtonProgress.beginFinalAnimation()
         }
-        return maxLength
     }
 
     fun updateCounterMessage (contentEditText : EditText) {
-        val counter = SpannableStringBuilder()
-        counter.clear()
-        counter.clearSpans()
+        model?.currentBarcodeLiveData?.value?.let { barcode ->
+            val counter = SpannableStringBuilder()
+            counter.clear()
+            counter.clearSpans()
 
-        val length = contentEditText.length()
-        if (length > 0) {
-            // Set the max length for the AbstractBarcode type selected
-            val maxLength = getMaxLength()
+            val length = contentEditText.length()
+            if (length > 0) {
+                // Set the max length for the AbstractBarcode type selected
+                val maxLength = barcode.maxLength
 
-            counter.append("$length/$maxLength")
-            if (length < maxLength)
-                counter.setSpan(ForegroundColorSpan(Color.GRAY), 0, counter.length,
-                        Spanned.SPAN_INCLUSIVE_EXCLUSIVE)
-            if (length == maxLength)
-                counter.setSpan(ForegroundColorSpan(Color.GREEN), 0, counter.length,
-                        Spanned.SPAN_INCLUSIVE_EXCLUSIVE)
+                counter.append("$length/$maxLength")
+                if (length < maxLength)
+                    counter.setSpan(ForegroundColorSpan(Color.GRAY), 0, counter.length,
+                            Spanned.SPAN_INCLUSIVE_EXCLUSIVE)
+                if (length == maxLength)
+                    counter.setSpan(ForegroundColorSpan(Color.GREEN), 0, counter.length,
+                            Spanned.SPAN_INCLUSIVE_EXCLUSIVE)
 
-            contentTextInputLayout.error = counter
-        }
-    }
-
-    private fun isUPCValid(content : String, limit : Int) : Boolean {
-        if (content.length < limit)
-            return false
-        if (content.length > limit) {
-            errorsMessages.append("The content must be $limit digit long.")
-            return false
-        }
-        if (content.length == limit && !content.matches(Regex("^\\d+$"))) {
-            errorsMessages.append("The content must be only digit.")
-            return false
-        }
-        return true
-    }
-
-    private fun isFirstChar0ou1(content : String): Boolean {
-        if (!content[0].equals('0') && !content[0].equals('1')) {
-            errorsMessages.append("The content must begin with 0 or 1")
-            return false
-        }
-        return true
-    }
-
-    private fun isEANValid (content : String, limit : Int) : Boolean {
-        return isUPCValid(content, limit)
-    }
-
-    private fun isCode128Valid(content : String) : Boolean {
-        if (content.isEmpty() || content.length > 80) {
-            errorsMessages.append("Contents length should be between 1 and 80 characters.")
-            return false
-        }
-        return true
-    }
-
-    private fun isValid (type : String, content : String) : Boolean {
-        return when (type) {
-            "UPC-A"     -> isUPCValid(content, 11)
-            "UPC-E"     -> isUPCValid(content, 7) && isFirstChar0ou1(content)
-            "EAN-8"     -> isEANValid(content,7)
-            "EAN-13"    -> isEANValid(content, 12)
-            "Code 128"  -> isCode128Valid(content)
-            "QR Code"   -> true
-            else  -> false
-        }
-    }
-
-    var delay: Long = 2000 // 2 seconds after user stops typing
-    var lastTextEdit: Long = 0
-    var handler = Handler()
-
-    private fun updateBarcodeImageViewSource(type: String, content: String) {
-        context?.let { context ->
-            Glide.with(context)
-                .load(Controller.instance.generateBarcode(type, content))
-                .into(barcodeImageView)
-        }
-
-        currentBarcode = Controller.instance.getBarcode()
-    }
-
-    private val inputFinishChecker = Runnable {
-        val type = barcodeTypeSpinner.selectedItem.toString()
-        if (System.currentTimeMillis() > lastTextEdit + delay - 500) {
-            contentEditText?.let {
-                if (isValid(type, it.text.toString())) {
-                    updateBarcodeImageViewSource(type, it.text.toString())
-                }
+                contentTextInputLayout.error = counter
             }
         }
     }
 
-    interface OnGenerateBarcodeFragmentListener {
-        fun addBarcode(barcode: AbstractBarcode)
-        fun getBarcodes(): LiveData<List<Barcode>>
+    private fun updateBarcodeImageViewSource(type: String, content: String) {
+        progressBarHolder?.visibility = View.VISIBLE
+        model?.content = content
+        doAsync {
+            model?.let { model ->
+                model.currentBitmapLiveData.postValue(Controller.instance.generateBitmap(type, content))
+                model.currentBarcodeLiveData.postValue(Controller.instance.getBarcode())
+            }
+        }
+    }
+
+    var delay: Long = 2000
+    var handler = Handler()
+
+    private val inputFinishChecker = Runnable {
+        val type = barcodeTypeSpinner?.selectedItem.toString()
+        if (System.currentTimeMillis() >  delay - 500) {
+            contentEditText?.let {
+                model?.currentBarcodeLiveData?.value?.let { barcode ->
+                    if (barcode.isValid(it.text.toString()))
+                        updateBarcodeImageViewSource(type, it.text.toString())
+                    else {
+                        Toast.makeText(context, barcode.getErrorsMessage(),
+                                Toast.LENGTH_SHORT).show()
+                    }
+                }
+            }
+        }
     }
 }
