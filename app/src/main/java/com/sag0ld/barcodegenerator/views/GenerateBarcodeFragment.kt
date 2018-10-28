@@ -13,6 +13,7 @@ import android.text.style.ForegroundColorSpan
 import android.view.*
 import android.widget.*
 import com.bumptech.glide.Glide
+import com.github.jorgecastilloprz.listeners.FABProgressListener
 import com.sag0ld.barcodegenerator.*
 import com.sag0ld.barcodegenerator.R
 
@@ -22,10 +23,11 @@ import com.sag0ld.barcodegenerator.viewModels.BarcodeViewModel
 import kotlinx.android.synthetic.main.fragment_generate_barcode.*
 import org.jetbrains.anko.doAsync
 
-class GenerateBarcodeFragment : Fragment() {
+class GenerateBarcodeFragment : Fragment(), FABProgressListener {
 
     private var contentEditText : EditText? = null
     private var model : BarcodeViewModel? = null
+    private var isSaveBtnLocked = false
     private lateinit var typeAdapter : ArrayAdapter<CharSequence>
 
     companion object {
@@ -53,11 +55,16 @@ class GenerateBarcodeFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         saveButton?.setOnClickListener {
-            progressBarHolder?.visibility = View.VISIBLE
-            model?.currentBarcodeLiveData?.value?.let { code ->
-                saveToDatabase(code)
+            if (!isSaveBtnLocked) {
+                model?.currentBarcodeLiveData?.value?.let { code ->
+                    isSaveBtnLocked = true
+                    saveButtonProgress.show()
+                    saveButtonProgress.attachListener(this)
+                    saveToDatabase(code)
+                }
             }
         }
+
 
         barcodeTypeSpinner?.adapter = typeAdapter
         barcodeTypeSpinner?.onItemSelectedListener = object: AdapterView.OnItemSelectedListener {
@@ -193,6 +200,13 @@ class GenerateBarcodeFragment : Fragment() {
         return super.onOptionsItemSelected(item)
     }
 
+    override fun onFABProgressAnimationEnd() {
+        view?.let {
+            Snackbar.make(it, "Saved", Snackbar.LENGTH_SHORT).show()
+        }
+        isSaveBtnLocked = false
+    }
+
     private fun saveToDatabase(currentBarcode: AbstractBarcode) {
         model?.let { model ->
             val barcode = Barcode()
@@ -201,11 +215,8 @@ class GenerateBarcodeFragment : Fragment() {
             barcode.type = currentBarcode.toString()
 
             model.addBarcode(barcode)
-            view?.let {
-                Snackbar.make(it, "Saved", Snackbar.LENGTH_SHORT).show()
-            }
+            saveButtonProgress.beginFinalAnimation()
         }
-        progressBarHolder?.visibility = View.GONE
     }
 
     fun updateCounterMessage (contentEditText : EditText) {
