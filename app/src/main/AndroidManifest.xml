@@ -19,8 +19,7 @@
         </activity>
         <activity
             android:name=".CodeDetailsActivity"
-            android:label="@string/title_activity_code_details"
-            android:theme="@style/AppTheme.NoActionBar" />
+            android:label="@string/title_activity_code_details" />
     </application>
 
 </manifest>

@@ -8,17 +8,17 @@ import android.support.v7.app.AppCompatActivity
 import com.bumptech.glide.Glide
 import com.sag0ld.barcodegenerator.barcodes.AbstractBarcode
 import com.sag0ld.barcodegenerator.database.Barcode
-import com.sag0ld.barcodegenerator.viewModels.BarcodeViewModel
 import com.sag0ld.barcodegenerator.viewModels.CodeDetailsViewModel
 
 import kotlinx.android.synthetic.main.content_code_details.*
+import kotlinx.android.synthetic.main.activity_code_details.*
 import org.jetbrains.anko.doAsync
 import java.util.*
 
 class CodeDetailsActivity : AppCompatActivity() {
 
     companion object {
-        val EXTRA_ID = "ID"
+        val EXTRA_ID = "BARCODE_ID"
     }
 
     private lateinit var model : CodeDetailsViewModel
@@ -27,6 +27,14 @@ class CodeDetailsActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_code_details)
+        setSupportActionBar(toolbar)
+
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
+        supportActionBar?.setDisplayShowTitleEnabled(false)
+
+        toolbar?.setNavigationOnClickListener {
+            onBackPressed()
+        }
 
         val barcodeID = intent.getLongExtra(EXTRA_ID, 0L)
         model = ViewModelProviders.of(this).get(CodeDetailsViewModel::class.java)
@@ -37,18 +45,20 @@ class CodeDetailsActivity : AppCompatActivity() {
                 barcode.type?.let { type ->
                     codeDetails = Controller.instance.createBarcodeEntity(type)
                 }
-
-                codeDetails?.let { code ->
-                    code.content = barcode.content
+               codeDetails?.let { code ->
+                    barcode.content?.let { content ->
+                        code.content = content
+                        if (code.isValid(content)) {
+                            doAsync {
+                                model.bitmapLiveData.postValue(code.generate())
+                            }
+                        }
+                    }
                     code.createAt = Calendar.getInstance()
                     barcode.createAt?.let { lastUpdateInMillis ->
                         code.createAt?.timeInMillis = lastUpdateInMillis
                     }
-                    doAsync {
-                        model.bitmapLiveData.postValue(code.generate())
-                    }
                 }
-
             }
         })
     }
@@ -66,5 +76,9 @@ class CodeDetailsActivity : AppCompatActivity() {
             codeContentTextView?.text = barcode.content
             codeDateTextView?.text = barcode.createAtDatetoString()
         }})
+    }
+
+    override fun onBackPressed() {
+        super.onBackPressed()
     }
 }
