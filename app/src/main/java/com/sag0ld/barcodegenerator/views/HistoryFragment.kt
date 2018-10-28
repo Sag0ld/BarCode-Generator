@@ -9,15 +9,13 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
-import com.sag0ld.barcodegenerator.App
-import com.sag0ld.barcodegenerator.BarcodeAdapter
-import com.sag0ld.barcodegenerator.IHistoryFragementListener
-import com.sag0ld.barcodegenerator.R
 import com.sag0ld.barcodegenerator.database.Barcode
 import kotlinx.android.synthetic.main.fragment_history.*
 import java.util.*
 import android.arch.lifecycle.ViewModelProviders
+import android.content.Intent
 import android.support.design.widget.Snackbar
+import com.sag0ld.barcodegenerator.*
 import com.sag0ld.barcodegenerator.viewModels.BarcodeViewModel
 
 class HistoryFragment : Fragment(), IHistoryFragementListener {
@@ -63,7 +61,9 @@ class HistoryFragment : Fragment(), IHistoryFragementListener {
     }
 
     override fun showCodeInformation(barcode: Barcode) {
-        Toast.makeText(context, "Barcode"+barcode.content, Toast.LENGTH_SHORT).show()
+        val intent = Intent(context, CodeDetailsActivity::class.java)
+        intent.putExtra(CodeDetailsActivity.EXTRA_ID, barcode.id)
+        startActivity(intent)
     }
 
     override fun deleteCode(barcode: Barcode) {

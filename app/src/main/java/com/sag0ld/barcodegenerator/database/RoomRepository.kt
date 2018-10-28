@@ -7,6 +7,10 @@ import org.jetbrains.anko.doAsync
 
 class RoomRepository: BarcodeDao {
 
+    override fun getBarcodeById(barcodeId: Long): LiveData<Barcode> {
+        return AppDatabase.getAppDatabase(App.instance.applicationContext).barcodeDao().getBarcodeById(barcodeId)
+    }
+
     override fun getAll(): LiveData<List<Barcode>> {
         return AppDatabase.getAppDatabase(App.instance.applicationContext).barcodeDao().getAll()
     }

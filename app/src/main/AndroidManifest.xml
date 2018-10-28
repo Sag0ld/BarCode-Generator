@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.sag0ld.barcodegenerator">
+
     <application
         android:name=".App"
         android:allowBackup="true"
@@ -12,8 +13,14 @@
         <activity android:name=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity
+            android:name=".CodeDetailsActivity"
+            android:label="@string/title_activity_code_details"
+            android:theme="@style/AppTheme.NoActionBar" />
     </application>
+
 </manifest>
