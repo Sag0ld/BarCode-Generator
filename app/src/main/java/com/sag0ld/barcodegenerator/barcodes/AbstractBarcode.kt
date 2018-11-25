@@ -9,23 +9,22 @@ import java.util.*
 
 abstract class AbstractBarcode {
 
-    companion object {
-        val TYPE = "Abstract"
-    }
-
     val width = 160 * 5
     val height = 101 * 3
     abstract val maxLength: Int
 
-
     var errors = StringBuilder()
-    abstract var content : String?
+    abstract var content : String
     abstract var description : String
     abstract var createAt : Calendar?
 
     abstract fun generate () : Bitmap?
-    abstract fun isValid(content: String): Boolean
+    abstract fun isValid(): Boolean
     abstract override fun toString () : String
+
+    open fun hasDelayToGenerateBitmap():Boolean {
+        return false
+    }
 
     fun getErrorsMessage(): String {
         val tmpErrors = errors.toString()

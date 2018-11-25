@@ -7,11 +7,11 @@ import com.sag0ld.barcodegenerator.App
 import com.sag0ld.barcodegenerator.R
 import java.util.*
 
-class Code128(override var content: String?, override var createAt: Calendar?) : AbstractBarcode() {
+class Code128(override var content: String, override var createAt: Calendar?) : AbstractBarcode() {
     override val maxLength = 80
     override var description: String = App.instance.applicationContext.getString(R.string.code128_description)
 
-   override fun isValid(content: String): Boolean {
+   override fun isValid(): Boolean {
         if (content.isEmpty() || content.length > 80) {
             errors.appendln("Contents length should be between 1 and 80 characters.")
             return false
@@ -26,5 +26,9 @@ class Code128(override var content: String?, override var createAt: Calendar?) :
 
     override fun toString(): String {
         return "Code 128"
+    }
+
+    override fun hasDelayToGenerateBitmap():Boolean {
+        return true
     }
 }

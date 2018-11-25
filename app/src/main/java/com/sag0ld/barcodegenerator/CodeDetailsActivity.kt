@@ -48,7 +48,7 @@ class CodeDetailsActivity : AppCompatActivity() {
                codeDetails?.let { code ->
                     barcode.content?.let { content ->
                         code.content = content
-                        if (code.isValid(content)) {
+                        if (code.isValid()) {
                             doAsync {
                                 model.bitmapLiveData.postValue(code.generate())
                             }
@@ -66,8 +66,9 @@ class CodeDetailsActivity : AppCompatActivity() {
     override fun onResume() {
         super.onResume()
         model.bitmapLiveData.observe(this, Observer<Bitmap> { it?.let { bitmap ->
-            Glide.with(this)
+            GlideApp.with(this)
                     .load(bitmap)
+                    .error(R.drawable.ic_error_loading)
                     .into(codeImageViewDetails)
         } })
 

@@ -52,13 +52,15 @@ class BarcodeAdapter(val context: Context): RecyclerView.Adapter<BarcodeAdapter.
 
         fun bind(barcode: Barcode) {
             if (barcode.isQrCode()) {
-                Glide.with(context)
+                GlideApp.with(context)
                         .load(R.drawable.ic_qr_code)
+                        .error(R.drawable.ic_error_loading)
                         .into(barcodeImageView)
             }
             else {
-                Glide.with(context)
+                GlideApp.with(context)
                         .load(R.drawable.ic_product_barcode)
+                        .error(R.drawable.ic_error_loading)
                         .into(barcodeImageView)
             }
 
