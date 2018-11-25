@@ -51,18 +51,10 @@ class BarcodeAdapter(val context: Context): RecyclerView.Adapter<BarcodeAdapter.
         val createAtHoursTextView = view.findViewById<TextView>(R.id.createAtHoursTextView)
 
         fun bind(barcode: Barcode) {
-            if (barcode.isQrCode()) {
-                GlideApp.with(context)
-                        .load(R.drawable.ic_qr_code)
-                        .error(R.drawable.ic_error_loading)
-                        .into(barcodeImageView)
-            }
-            else {
-                GlideApp.with(context)
-                        .load(R.drawable.ic_product_barcode)
-                        .error(R.drawable.ic_error_loading)
-                        .into(barcodeImageView)
-            }
+            if (barcode.isQrCode())
+                barcodeImageView.setImageResource(R.drawable.ic_qr_code)
+            else
+                barcodeImageView.setImageResource(R.drawable.ic_product_barcode)
 
             barcodeTypeTextView.text = barcode.type
             barcodeContentTextView.text = barcode.content

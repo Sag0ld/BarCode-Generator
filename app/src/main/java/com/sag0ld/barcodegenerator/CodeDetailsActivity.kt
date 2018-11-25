@@ -4,6 +4,7 @@ import android.arch.lifecycle.Observer
 import android.arch.lifecycle.ViewModelProviders
 import android.graphics.Bitmap
 import android.os.Bundle
+import android.os.Looper
 import android.support.v7.app.AppCompatActivity
 import com.bumptech.glide.Glide
 import com.sag0ld.barcodegenerator.barcodes.AbstractBarcode
@@ -77,9 +78,5 @@ class CodeDetailsActivity : AppCompatActivity() {
             codeContentTextView?.text = barcode.content
             codeDateTextView?.text = barcode.createAtDatetoString()
         }})
-    }
-
-    override fun onBackPressed() {
-        super.onBackPressed()
     }
 }

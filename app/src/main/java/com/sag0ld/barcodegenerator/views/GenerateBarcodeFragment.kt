@@ -21,7 +21,6 @@ import com.sag0ld.barcodegenerator.database.Barcode
 import com.sag0ld.barcodegenerator.viewModels.BarcodeViewModel
 import kotlinx.android.synthetic.main.fragment_generate_barcode.*
 import org.jetbrains.anko.doAsync
-import org.jetbrains.anko.sdk25.coroutines.textChangedListener
 
 class GenerateBarcodeFragment : Fragment(), FABProgressListener {
 
@@ -73,7 +72,7 @@ class GenerateBarcodeFragment : Fragment(), FABProgressListener {
         contentEditText?.addTextChangedListener(textWatcher)
     }
 
-    val itemSelectedListener = object : AdapterView.OnItemSelectedListener {
+    private val itemSelectedListener = object : AdapterView.OnItemSelectedListener {
         override fun onNothingSelected(p0: AdapterView<*>?) {}
 
         override fun onItemSelected(p0: AdapterView<*>?, p1: View?, p2: Int, p3: Long) {
@@ -102,7 +101,7 @@ class GenerateBarcodeFragment : Fragment(), FABProgressListener {
         }
     }
 
-    val textWatcher = object: TextWatcher {
+    private val textWatcher = object: TextWatcher {
         override fun afterTextChanged(editableText: Editable) {
             handler.removeCallbacks(inputFinishChecker)
             updateCounterMessage(editableText.length)
@@ -223,7 +222,7 @@ class GenerateBarcodeFragment : Fragment(), FABProgressListener {
     }
 
     var delay: Long = 2000
-    var handler = Handler(Looper.getMainLooper())
+    var handler = Handler(Looper.myLooper())
 
     private val inputFinishChecker = object: Runnable {
         override fun run() {

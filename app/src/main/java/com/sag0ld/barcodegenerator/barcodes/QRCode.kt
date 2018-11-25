@@ -12,7 +12,10 @@ class QRCode(override var content: String, override var createAt: Calendar?) : A
     override var description: String = App.instance.applicationContext.getString(R.string.qr_description)
 
     override fun isValid(): Boolean {
-        return true
+        if (content.isNotEmpty())
+            return true
+        else
+            return false
     }
 
     override fun generate(): Bitmap? {
