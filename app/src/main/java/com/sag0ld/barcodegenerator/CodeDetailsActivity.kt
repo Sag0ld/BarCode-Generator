@@ -6,6 +6,7 @@ import android.graphics.Bitmap
 import android.os.Bundle
 import android.os.Looper
 import android.support.v7.app.AppCompatActivity
+import android.view.Menu
 import com.bumptech.glide.Glide
 import com.sag0ld.barcodegenerator.barcodes.AbstractBarcode
 import com.sag0ld.barcodegenerator.database.Barcode
@@ -62,6 +63,11 @@ class CodeDetailsActivity : AppCompatActivity() {
                 }
             }
         })
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        menuInflater.inflate(R.menu.details_code_menu, menu)
+        return super.onCreateOptionsMenu(menu)
     }
 
     override fun onResume() {
