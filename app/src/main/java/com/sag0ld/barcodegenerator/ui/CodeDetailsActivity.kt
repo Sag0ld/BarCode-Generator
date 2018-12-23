@@ -1,24 +1,23 @@
-package com.sag0ld.barcodegenerator
+package com.sag0ld.barcodegenerator.ui
 
 import android.arch.lifecycle.Observer
 import android.arch.lifecycle.ViewModelProviders
 import android.graphics.Bitmap
 import android.os.Bundle
-import android.os.Looper
-import android.support.design.widget.Snackbar
 import android.support.v7.app.AlertDialog
 import android.support.v7.app.AppCompatActivity
 import android.view.Menu
 import android.view.MenuItem
 import android.widget.Toast
-import com.bumptech.glide.Glide
-import com.sag0ld.barcodegenerator.barcodes.AbstractBarcode
-import com.sag0ld.barcodegenerator.database.Barcode
-import com.sag0ld.barcodegenerator.viewModels.CodeDetailsViewModel
+import com.sag0ld.barcodegenerator.R
+import com.sag0ld.barcodegenerator.data.barcodes.AbstractBarcode
+import com.sag0ld.barcodegenerator.domain.Barcode
+import com.sag0ld.barcodegenerator.ui.viewModels.CodeDetailsViewModel
+import com.sag0ld.barcodegenerator.util.BarcodeFactory
+import com.sag0ld.barcodegenerator.util.GlideApp
 
 import kotlinx.android.synthetic.main.content_code_details.*
 import kotlinx.android.synthetic.main.activity_code_details.*
-import org.jetbrains.anko.contentView
 import org.jetbrains.anko.doAsync
 import java.util.*
 
@@ -50,7 +49,7 @@ class CodeDetailsActivity : AppCompatActivity() {
         model.barcodeLiveData.observe(this, Observer<Barcode> {
             it?.let { barcode ->
                 barcode.type?.let { type ->
-                    codeDetails = Controller.instance.createBarcodeEntity(type)
+                    codeDetails = BarcodeFactory.instance.createBarcodeEntity(type)
                 }
                 codeDetails?.let { code ->
                     barcode.content?.let { content ->

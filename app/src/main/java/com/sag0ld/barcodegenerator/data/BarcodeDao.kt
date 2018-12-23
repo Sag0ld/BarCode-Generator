@@ -1,11 +1,11 @@
-package com.sag0ld.barcodegenerator.database
+package com.sag0ld.barcodegenerator.data
 
 import android.arch.lifecycle.LiveData
-import android.arch.lifecycle.MutableLiveData
 import android.arch.persistence.room.Dao
 import android.arch.persistence.room.Delete
 import android.arch.persistence.room.Insert
 import android.arch.persistence.room.Query
+import com.sag0ld.barcodegenerator.domain.Barcode
 
 @Dao
 interface BarcodeDao {

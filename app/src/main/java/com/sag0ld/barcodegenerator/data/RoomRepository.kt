@@ -1,8 +1,8 @@
-package com.sag0ld.barcodegenerator.database
+package com.sag0ld.barcodegenerator.data
 
 import android.arch.lifecycle.LiveData
-import android.arch.lifecycle.MutableLiveData
-import com.sag0ld.barcodegenerator.App
+import com.sag0ld.barcodegenerator.data.base.App
+import com.sag0ld.barcodegenerator.domain.Barcode
 import org.jetbrains.anko.doAsync
 
 class RoomRepository: BarcodeDao {

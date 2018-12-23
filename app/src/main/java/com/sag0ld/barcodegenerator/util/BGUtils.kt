@@ -1,9 +1,10 @@
-package com.sag0ld.barcodegenerator
+package com.sag0ld.barcodegenerator.util
 
 import android.content.Context
 import android.content.ContextWrapper
 import android.graphics.Bitmap
 import android.net.Uri
+import com.sag0ld.barcodegenerator.data.base.App
 import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException

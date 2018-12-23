@@ -1,4 +1,4 @@
-package com.sag0ld.barcodegenerator
+package com.sag0ld.barcodegenerator.util
 
 import android.content.Context
 import android.support.v7.widget.RecyclerView
@@ -7,10 +7,10 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import android.view.LayoutInflater
-import com.sag0ld.barcodegenerator.database.Barcode
+import com.sag0ld.barcodegenerator.domain.Barcode
 import java.util.*
 import android.widget.RelativeLayout
-import com.sag0ld.barcodegenerator.viewModels.BarcodeViewModel
+import com.sag0ld.barcodegenerator.R
 
 
 class BarcodeAdapter(val context: Context): RecyclerView.Adapter<BarcodeAdapter.BarcodeViewHolder>() {

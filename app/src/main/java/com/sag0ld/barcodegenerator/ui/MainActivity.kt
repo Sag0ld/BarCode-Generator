@@ -1,4 +1,4 @@
-package com.sag0ld.barcodegenerator
+package com.sag0ld.barcodegenerator.ui
 
 import android.os.Bundle
 import android.support.design.widget.NavigationView
@@ -6,8 +6,9 @@ import android.support.v4.view.GravityCompat
 import android.support.v7.app.ActionBarDrawerToggle
 import android.support.v7.app.AppCompatActivity
 import android.view.MenuItem
-import com.sag0ld.barcodegenerator.views.GenerateBarcodeFragment
-import com.sag0ld.barcodegenerator.views.HistoryFragment
+import com.sag0ld.barcodegenerator.R
+import com.sag0ld.barcodegenerator.ui.fragment.GenerateBarcodeFragment
+import com.sag0ld.barcodegenerator.ui.fragment.HistoryFragment
 import kotlinx.android.synthetic.main.activity_main2.*
 import kotlinx.android.synthetic.main.app_bar_main2.*
 

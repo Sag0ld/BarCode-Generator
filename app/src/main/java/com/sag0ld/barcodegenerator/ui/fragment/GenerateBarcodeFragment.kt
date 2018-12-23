@@ -1,4 +1,4 @@
-package com.sag0ld.barcodegenerator.views
+package com.sag0ld.barcodegenerator.ui.fragment
 
 import android.arch.lifecycle.*
 import android.arch.lifecycle.Observer
@@ -13,12 +13,13 @@ import android.text.style.ForegroundColorSpan
 import android.view.*
 import android.widget.*
 import com.github.jorgecastilloprz.listeners.FABProgressListener
-import com.sag0ld.barcodegenerator.*
 import com.sag0ld.barcodegenerator.R
 
-import com.sag0ld.barcodegenerator.barcodes.AbstractBarcode
-import com.sag0ld.barcodegenerator.database.Barcode
-import com.sag0ld.barcodegenerator.viewModels.BarcodeViewModel
+import com.sag0ld.barcodegenerator.data.barcodes.AbstractBarcode
+import com.sag0ld.barcodegenerator.domain.Barcode
+import com.sag0ld.barcodegenerator.ui.viewModels.BarcodeViewModel
+import com.sag0ld.barcodegenerator.util.BarcodeFactory
+import com.sag0ld.barcodegenerator.util.GlideApp
 import kotlinx.android.synthetic.main.fragment_generate_barcode.*
 import org.jetbrains.anko.doAsync
 
@@ -77,7 +78,7 @@ class GenerateBarcodeFragment : Fragment(), FABProgressListener {
 
         override fun onItemSelected(p0: AdapterView<*>?, p1: View?, p2: Int, p3: Long) {
             val type = barcodeTypeSpinner.selectedItem.toString()
-            val barcode = Controller.instance.createBarcodeEntity(type)
+            val barcode = BarcodeFactory.instance.createBarcodeEntity(type)
             model?.currentBarcodeLiveData?.value = barcode
             typeDescription?.text = barcode.description
 

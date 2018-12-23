@@ -1,4 +1,4 @@
-package com.sag0ld.barcodegenerator.views
+package com.sag0ld.barcodegenerator.ui.fragment
 
 import android.arch.lifecycle.Observer
 import android.os.Bundle
@@ -8,7 +8,7 @@ import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import com.sag0ld.barcodegenerator.database.Barcode
+import com.sag0ld.barcodegenerator.domain.Barcode
 import kotlinx.android.synthetic.main.fragment_history.*
 import java.util.*
 import android.arch.lifecycle.ViewModelProviders
@@ -17,9 +17,13 @@ import android.graphics.Color
 import android.support.design.widget.Snackbar
 import android.support.v7.app.AlertDialog
 import com.sag0ld.barcodegenerator.*
-import com.sag0ld.barcodegenerator.viewModels.BarcodeViewModel
+import com.sag0ld.barcodegenerator.ui.viewModels.BarcodeViewModel
 import android.support.v7.widget.helper.ItemTouchHelper
-import com.sag0ld.barcodegenerator.RecyclerItemTouchHelper
+import com.sag0ld.barcodegenerator.data.base.App
+import com.sag0ld.barcodegenerator.ui.CodeDetailsActivity
+import com.sag0ld.barcodegenerator.util.BarcodeAdapter
+import com.sag0ld.barcodegenerator.util.IHistoryFragementListener
+import com.sag0ld.barcodegenerator.util.RecyclerItemTouchHelper
 
 
 

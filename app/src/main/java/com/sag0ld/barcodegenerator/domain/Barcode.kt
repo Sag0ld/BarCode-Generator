@@ -1,4 +1,4 @@
-package com.sag0ld.barcodegenerator.database
+package com.sag0ld.barcodegenerator.domain
 
 import android.arch.lifecycle.ViewModel
 import android.arch.persistence.room.ColumnInfo

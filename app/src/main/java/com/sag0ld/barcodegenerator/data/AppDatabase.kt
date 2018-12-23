@@ -1,9 +1,10 @@
-package com.sag0ld.barcodegenerator.database
+package com.sag0ld.barcodegenerator.data
 
 import android.arch.persistence.room.RoomDatabase
 import android.arch.persistence.room.Database
 import android.arch.persistence.room.Room
 import android.content.Context
+import com.sag0ld.barcodegenerator.domain.Barcode
 
 @Database(entities = [(Barcode::class)], version = 1)
 abstract class AppDatabase: RoomDatabase() {

@@ -1,4 +1,4 @@
-package com.sag0ld.barcodegenerator
+package com.sag0ld.barcodegenerator.util
 
 import com.bumptech.glide.annotation.GlideModule
 import com.bumptech.glide.module.AppGlideModule

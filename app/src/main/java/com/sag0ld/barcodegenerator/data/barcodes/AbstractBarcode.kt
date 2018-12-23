@@ -1,9 +1,9 @@
-package com.sag0ld.barcodegenerator.barcodes
+package com.sag0ld.barcodegenerator.data.barcodes
 
 import android.graphics.Bitmap
 import android.graphics.Color
 import com.google.zxing.common.BitMatrix
-import com.sag0ld.barcodegenerator.App
+import com.sag0ld.barcodegenerator.data.base.App
 import com.sag0ld.barcodegenerator.R
 import java.util.*
 

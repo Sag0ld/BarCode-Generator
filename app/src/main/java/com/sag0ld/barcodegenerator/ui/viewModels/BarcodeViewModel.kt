@@ -1,12 +1,12 @@
-package com.sag0ld.barcodegenerator.viewModels
+package com.sag0ld.barcodegenerator.ui.viewModels
 
 import android.arch.lifecycle.MutableLiveData
 import android.arch.lifecycle.ViewModel
 import android.arch.lifecycle.LiveData
 import android.graphics.Bitmap
-import com.sag0ld.barcodegenerator.barcodes.AbstractBarcode
-import com.sag0ld.barcodegenerator.database.Barcode
-import com.sag0ld.barcodegenerator.database.RoomRepository
+import com.sag0ld.barcodegenerator.data.barcodes.AbstractBarcode
+import com.sag0ld.barcodegenerator.domain.Barcode
+import com.sag0ld.barcodegenerator.data.RoomRepository
 
 
 class BarcodeViewModel: ViewModel() {

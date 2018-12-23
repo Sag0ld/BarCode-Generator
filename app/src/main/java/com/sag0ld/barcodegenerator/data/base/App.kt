@@ -1,4 +1,4 @@
-package com.sag0ld.barcodegenerator
+package com.sag0ld.barcodegenerator.data.base
 
 import android.app.Application
 

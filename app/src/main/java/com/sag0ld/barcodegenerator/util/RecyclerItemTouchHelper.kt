@@ -1,4 +1,4 @@
-package com.sag0ld.barcodegenerator
+package com.sag0ld.barcodegenerator.util
 
 import android.graphics.Canvas
 import android.support.v7.widget.RecyclerView
