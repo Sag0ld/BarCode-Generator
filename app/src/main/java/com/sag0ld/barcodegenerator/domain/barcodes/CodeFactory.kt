@@ -1,14 +1,14 @@
 package com.sag0ld.barcodegenerator
 
-import com.sag0ld.barcodegenerator.barcodes.*
+import com.sag0ld.barcodegenerator.domain.barcodes.*
 import java.util.*
 
-class Controller private constructor() {
-    private object Holder { val INSTANCE = Controller() }
+class CodeFactory private constructor() {
+    private object Holder { val INSTANCE = CodeFactory() }
     private var createAt: Calendar? = null
 
     companion object {
-        val instance : Controller by lazy { Holder.INSTANCE }
+        val instance : CodeFactory by lazy { Holder.INSTANCE }
     }
 
     fun createBarcodeEntity(type: String): AbstractBarcode {
@@ -23,15 +23,4 @@ class Controller private constructor() {
             else -> UPCA("", createAt)
         }
     }
-
-    /* fun generateBitmap (type: String, content : String) : Bitmap? {
-        if (barcode == null)
-            createBarcodeEntity(type)
-        barcode?.content = content
-        return barcode?.generate()
-    }*/
-
-    /* fun getBarcodeDescription(): String? {
-        return barcode?.description
-    }*/
 }
