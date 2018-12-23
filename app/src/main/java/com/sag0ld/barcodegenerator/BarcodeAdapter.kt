@@ -6,10 +6,12 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
-import com.bumptech.glide.Glide
 import android.view.LayoutInflater
 import com.sag0ld.barcodegenerator.database.Barcode
 import java.util.*
+import android.widget.RelativeLayout
+import com.sag0ld.barcodegenerator.viewModels.BarcodeViewModel
+
 
 class BarcodeAdapter(val context: Context): RecyclerView.Adapter<BarcodeAdapter.BarcodeViewHolder>() {
 
@@ -38,12 +40,25 @@ class BarcodeAdapter(val context: Context): RecyclerView.Adapter<BarcodeAdapter.
         }
         holder.view.setOnLongClickListener {
             listener?.deleteCode(barcodes[position])
+
             true
         }
     }
 
-    inner class BarcodeViewHolder(val view: View): RecyclerView.ViewHolder(view) {
+    fun removeItem(adapterPosition: Int) {
+        barcodes.removeAt(adapterPosition)
+        notifyItemRemoved(adapterPosition)
+    }
 
+    fun restoreItem(deletedItem: Barcode, deletedIndex: Int) {
+        barcodes.add(deletedIndex, deletedItem)
+        listener?.addBarcode(deletedItem)
+        notifyDataSetChanged()
+    }
+
+    inner class BarcodeViewHolder(val view: View): RecyclerView.ViewHolder(view) {
+        val viewBackground = view.findViewById<RelativeLayout>(R.id.view_background)
+        val viewForeground = view.findViewById<RelativeLayout>(R.id.view_foreground)
         val barcodeImageView = view.findViewById<ImageView>(R.id.barcodeImageView)
         val barcodeTypeTextView = view.findViewById<TextView>(R.id.barcodeTypeTextView)
         val barcodeContentTextView = view.findViewById<TextView>(R.id.barcodeContentTextView)
@@ -51,16 +66,10 @@ class BarcodeAdapter(val context: Context): RecyclerView.Adapter<BarcodeAdapter.
         val createAtHoursTextView = view.findViewById<TextView>(R.id.createAtHoursTextView)
 
         fun bind(barcode: Barcode) {
-            if (barcode.isQrCode()) {
-                Glide.with(context)
-                        .load(R.drawable.ic_qr_code)
-                        .into(barcodeImageView)
-            }
-            else {
-                Glide.with(context)
-                        .load(R.drawable.ic_product_barcode)
-                        .into(barcodeImageView)
-            }
+            if (barcode.isQrCode())
+                barcodeImageView.setImageResource(R.drawable.ic_qr_code)
+            else
+                barcodeImageView.setImageResource(R.drawable.ic_product_barcode)
 
             barcodeTypeTextView.text = barcode.type
             barcodeContentTextView.text = barcode.content
@@ -73,4 +82,6 @@ class BarcodeAdapter(val context: Context): RecyclerView.Adapter<BarcodeAdapter.
 interface IHistoryFragementListener {
     fun showCodeInformation(barcode: Barcode)
     fun deleteCode(barcode: Barcode)
+    fun addBarcode(deletedItem: Barcode) {
+    }
 }

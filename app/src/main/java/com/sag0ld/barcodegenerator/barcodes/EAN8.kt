@@ -7,7 +7,7 @@ import com.sag0ld.barcodegenerator.App
 import com.sag0ld.barcodegenerator.R
 import java.util.*
 
-class EAN8 (override var content: String?, override var createAt: Calendar?) : AbstractBarcode() {
+class EAN8 (override var content: String, override var createAt: Calendar?) : AbstractBarcode() {
 
     companion object {
         val TYPE = "EAN-8"
@@ -16,7 +16,7 @@ class EAN8 (override var content: String?, override var createAt: Calendar?) : A
     override val maxLength = 7
     override var description: String = App.instance.applicationContext.getString(R.string.ean8_description)
 
-    override fun isValid(content: String): Boolean {
+    override fun isValid(): Boolean {
         if (content.length < maxLength)
             return false
         if (content.length > maxLength) {
@@ -38,5 +38,4 @@ class EAN8 (override var content: String?, override var createAt: Calendar?) : A
     override fun toString(): String {
         return "EAN-8"
     }
-
 }

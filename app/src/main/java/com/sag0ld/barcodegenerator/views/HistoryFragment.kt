@@ -8,26 +8,29 @@ import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
-import com.sag0ld.barcodegenerator.App
-import com.sag0ld.barcodegenerator.BarcodeAdapter
-import com.sag0ld.barcodegenerator.IHistoryFragementListener
-import com.sag0ld.barcodegenerator.R
 import com.sag0ld.barcodegenerator.database.Barcode
 import kotlinx.android.synthetic.main.fragment_history.*
 import java.util.*
 import android.arch.lifecycle.ViewModelProviders
+import android.content.Intent
+import android.graphics.Color
 import android.support.design.widget.Snackbar
+import android.support.v7.app.AlertDialog
+import com.sag0ld.barcodegenerator.*
 import com.sag0ld.barcodegenerator.viewModels.BarcodeViewModel
+import android.support.v7.widget.helper.ItemTouchHelper
+import com.sag0ld.barcodegenerator.RecyclerItemTouchHelper
 
-class HistoryFragment : Fragment(), IHistoryFragementListener {
+
+
+class HistoryFragment : Fragment(), IHistoryFragementListener, RecyclerItemTouchHelper.RecyclerItemTouchHelperListener {
 
     companion object {
         val TAG = HistoryFragment.javaClass.canonicalName
     }
 
     lateinit var adapter: BarcodeAdapter
-    lateinit var model : BarcodeViewModel
+    lateinit var model: BarcodeViewModel
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -59,17 +62,53 @@ class HistoryFragment : Fragment(), IHistoryFragementListener {
             noContentTextView?.visibility = View.GONE
         }
 
+        val itemTouchHelperCallback = RecyclerItemTouchHelper(
+                0, ItemTouchHelper.LEFT, this)
+        ItemTouchHelper(itemTouchHelperCallback).attachToRecyclerView(barcodeRecyclerView)
         return view
     }
 
     override fun showCodeInformation(barcode: Barcode) {
-        Toast.makeText(context, "Barcode"+barcode.content, Toast.LENGTH_SHORT).show()
+        val intent = Intent(context, CodeDetailsActivity::class.java)
+        intent.putExtra(CodeDetailsActivity.EXTRA_ID, barcode.id)
+        startActivity(intent)
     }
 
     override fun deleteCode(barcode: Barcode) {
-        view?.let {
-            Snackbar.make(it, "Deleted", Snackbar.LENGTH_SHORT).show()
-            model.deleteBarcode(barcode)
+        view?.let { view ->
+            context?.let {
+                AlertDialog.Builder(it)
+                    .setMessage(R.string.delete_message)
+                    .setNegativeButton(R.string.no) { p0, _ ->
+                        p0.cancel()
+                    }
+                    .setPositiveButton(R.string.yes) { _, _ ->
+                        Snackbar.make(view, "Deleted", Snackbar.LENGTH_SHORT).show()
+                        model.deleteBarcode(barcode)
+                    }.show()
+            }
+        }
+    }
+
+    override fun addBarcode(deletedItem: Barcode) {
+        model.addBarcode(deletedItem)
+    }
+
+    override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int, position: Int) {
+        if (viewHolder is BarcodeAdapter.BarcodeViewHolder) {
+            val deletedItem = adapter.barcodes[viewHolder.getAdapterPosition()]
+            val content = deletedItem.content
+            val deletedIndex = viewHolder.getAdapterPosition()
+
+            adapter.removeItem(viewHolder.getAdapterPosition())
+            model.deleteBarcode(deletedItem)
+
+            view?.let { view ->
+                Snackbar.make(view, "$content removed from history", Snackbar.LENGTH_INDEFINITE)
+                        .setAction("UNDO") { adapter.restoreItem(deletedItem, deletedIndex); }
+                        .setActionTextColor(Color.WHITE)
+                        .show()
+            }
         }
     }
 }

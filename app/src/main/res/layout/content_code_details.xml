@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    app:layout_behavior="@string/appbar_scrolling_view_behavior"
+    tools:context=".CodeDetailsActivity"
+    tools:showIn="@layout/activity_code_details">
+
+    <RelativeLayout
+        android:id="@+id/codeGenerationContainer"
+        android:layout_width="match_parent"
+        android:layout_height="200dp"
+        android:elevation="2dp"
+        android:background="#ffffff"
+        android:gravity="center">
+
+        <ImageView
+            android:id="@+id/codeImageViewDetails"
+            android:layout_width="200dp"
+            android:layout_height="200dp"
+            android:layout_margin="10dp"
+            android:layout_centerHorizontal="true"
+            app:srcCompat="@drawable/ic_qr_color"/>
+
+        <ProgressBar
+            android:id="@+id/progressBarHolder"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_centerInParent="true"
+            android:visibility="gone"/>
+    </RelativeLayout>
+
+    <TextView
+        android:id="@+id/codeTypeTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintLeft_toRightOf="parent"
+        app:layout_constraintRight_toLeftOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/codeGenerationContainer"
+        android:layout_marginTop="10dp"
+        android:text="Type" />
+
+    <RelativeLayout
+        android:id="@+id/contentContainerRelativeLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="10dp"
+        app:layout_constraintTop_toBottomOf="@id/codeTypeTextView">
+
+        <ImageView
+            android:id="@+id/contentLabelImageView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:srcCompat="@drawable/ic_content" />
+
+        <TextView
+            android:id="@+id/codeContentTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_marginStart="10dp"
+            android:layout_toEndOf="@id/contentLabelImageView"
+            android:text="Content" />
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="10dp"
+        app:layout_constraintTop_toBottomOf="@id/contentContainerRelativeLayout">
+
+        <ImageView
+            android:id="@+id/dateLastUpdateLabelImageView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:srcCompat="@drawable/ic_last_update" />
+
+        <TextView
+            android:id="@+id/codeDateTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_toEndOf="@id/dateLastUpdateLabelImageView"
+            android:layout_marginStart="10dp"
+            android:layout_centerVertical="true"
+            android:text="date" />
+    </RelativeLayout>
+</android.support.constraint.ConstraintLayout>

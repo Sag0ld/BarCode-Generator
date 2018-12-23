@@ -12,6 +12,9 @@ interface BarcodeDao {
     @Query("SELECT * FROM barcodes")
     fun getAll(): LiveData<List<Barcode>>
 
+    @Query("SELECT * FROM barcodes WHERE id = :barcodeId")
+    fun getBarcodeById(barcodeId: Long): LiveData<Barcode>
+
     @Insert
     fun insert(barcode: Barcode)
 

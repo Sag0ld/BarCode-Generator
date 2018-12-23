@@ -7,16 +7,15 @@ import com.sag0ld.barcodegenerator.App
 import com.sag0ld.barcodegenerator.R
 import java.util.*
 
-class UPCE(override var content: String?, override var createAt: Calendar?) : AbstractBarcode() {
+class UPCE(override var content: String, override var createAt: Calendar?) : AbstractBarcode() {
 
     companion object {
-        val TYPE = "UPC-E"
     }
 
     override val maxLength = 7
     override var description: String = App.instance.applicationContext.getString(R.string.upce_description)
 
-    override fun isValid(content: String): Boolean {
+    override fun isValid(): Boolean {
         if (content.length < maxLength)
             return false
 

@@ -9,6 +9,10 @@
     <string name="ean13_description">This barcode must be 12 digit long. We calcul the checksum</string>
     <string name="code128_description">This barcode can have 80 digit and character long. No special character. We calcul the checksum</string>
     <string name="qr_description">This barcode can be anything bellow 9999 long. We calcul the checksum</string>
+    <string name="delete_message">Do you really want to delete this code?</string>
+    <string name="delete">Delete</string>
+    <string name="yes">Yes</string>
+    <string name="no">No</string>
 
     <string-array name="type_of_barcode">
         <item>UPC-A</item>
@@ -27,4 +31,5 @@
     <string name="action_settings">Settings</string>
 
     <string name="no_content">Empty</string>
+    <string name="title_activity_code_details">CodeDetailsActivity</string>
 </resources>
