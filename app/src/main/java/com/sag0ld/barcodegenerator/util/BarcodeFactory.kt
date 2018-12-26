@@ -14,13 +14,13 @@ class BarcodeFactory private constructor() {
     fun createBarcodeEntity(type: String): AbstractBarcode {
         createAt = Calendar.getInstance()
         return when (type) {
-            "UPC-A"     -> UPCA("", createAt)
-            "UPC-E"     -> UPCE("", createAt)
-            "EAN-8"     -> EAN8("", createAt)
-            "EAN-13"    -> EAN13("", createAt)
-            "Code 128"  -> Code128("", createAt)
-            "QR Code"   -> QRCode("", createAt)
-            else -> UPCA("", createAt)
+            "UPC-A"     -> UPCA("", createAt!!)
+            "UPC-E"     -> UPCE("", createAt!!)
+            "EAN-8"     -> EAN8("", createAt!!)
+            "EAN-13"    -> EAN13("", createAt!!)
+            "Code 128"  -> Code128("", createAt!!)
+            "QR Code"   -> QRCode("", createAt!!)
+            else -> UPCA("", createAt!!)
         }
     }
 }

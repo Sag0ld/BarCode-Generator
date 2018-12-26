@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout
+    android:layout_height="wrap_content"
+    android:layout_width="match_parent"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <TextView
+        android:id="@+id/codeTypeTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintLeft_toRightOf="parent"
+        app:layout_constraintRight_toLeftOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/codeGenerationContainer"
+        android:layout_marginTop="10dp"
+        android:text="Type" />
+
+    <RelativeLayout
+        android:id="@+id/contentContainerRelativeLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="10dp"
+        app:layout_constraintTop_toBottomOf="@id/codeTypeTextView">
+
+        <ImageView
+            android:id="@+id/contentLabelImageView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:srcCompat="@drawable/ic_content" />
+
+        <TextView
+            android:id="@+id/codeContentTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_marginStart="10dp"
+            android:layout_toEndOf="@id/contentLabelImageView"
+            android:text="Content" />
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="10dp"
+        app:layout_constraintTop_toBottomOf="@id/contentContainerRelativeLayout">
+
+        <ImageView
+            android:id="@+id/dateLastUpdateLabelImageView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:srcCompat="@drawable/ic_last_update" />
+
+        <TextView
+            android:id="@+id/codeDateTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_toEndOf="@id/dateLastUpdateLabelImageView"
+            android:layout_marginStart="10dp"
+            android:layout_centerVertical="true"
+            android:text="date" />
+    </RelativeLayout>
+</android.support.constraint.ConstraintLayout>

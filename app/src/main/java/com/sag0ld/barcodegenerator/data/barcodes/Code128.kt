@@ -7,7 +7,8 @@ import com.sag0ld.barcodegenerator.data.base.App
 import com.sag0ld.barcodegenerator.R
 import java.util.*
 
-class Code128(override var content: String, override var createAt: Calendar?) : AbstractBarcode() {
+class Code128(override var content: String, override var createAt: Calendar) : AbstractBarcode() {
+
     override val maxLength = 80
     override var description: String = App.instance.applicationContext.getString(R.string.code128_description)
 

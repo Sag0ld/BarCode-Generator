@@ -7,7 +7,7 @@ import com.sag0ld.barcodegenerator.data.base.App
 import com.sag0ld.barcodegenerator.R
 import java.util.*
 
-class EAN8 (override var content: String, override var createAt: Calendar?) : AbstractBarcode() {
+class EAN8 (override var content: String, override var createAt: Calendar) : AbstractBarcode() {
 
     companion object {
         val TYPE = "EAN-8"

@@ -16,7 +16,7 @@ abstract class AbstractBarcode {
     var errors = StringBuilder()
     abstract var content : String
     abstract var description : String
-    abstract var createAt : Calendar?
+    abstract var createAt : Calendar
 
     abstract fun generate () : Bitmap?
     abstract fun isValid(): Boolean

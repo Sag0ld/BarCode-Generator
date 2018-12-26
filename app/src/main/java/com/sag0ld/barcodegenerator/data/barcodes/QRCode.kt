@@ -7,7 +7,8 @@ import com.sag0ld.barcodegenerator.data.base.App
 import com.sag0ld.barcodegenerator.R
 import java.util.*
 
-class QRCode(override var content: String, override var createAt: Calendar?) : AbstractBarcode() {
+class QRCode(override var content: String, override var createAt: Calendar) : AbstractBarcode() {
+
     override val maxLength = 9999
     override var description: String = App.instance.applicationContext.getString(R.string.qr_description)
 

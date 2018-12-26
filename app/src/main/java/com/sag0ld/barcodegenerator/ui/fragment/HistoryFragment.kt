@@ -20,7 +20,7 @@ import com.sag0ld.barcodegenerator.*
 import com.sag0ld.barcodegenerator.ui.viewModels.BarcodeViewModel
 import android.support.v7.widget.helper.ItemTouchHelper
 import com.sag0ld.barcodegenerator.data.base.App
-import com.sag0ld.barcodegenerator.ui.CodeDetailsActivity
+import com.sag0ld.barcodegenerator.ui.DetailsActivity
 import com.sag0ld.barcodegenerator.util.BarcodeAdapter
 import com.sag0ld.barcodegenerator.util.IHistoryFragementListener
 import com.sag0ld.barcodegenerator.util.RecyclerItemTouchHelper
@@ -73,8 +73,8 @@ class HistoryFragment : Fragment(), IHistoryFragementListener, RecyclerItemTouch
     }
 
     override fun showCodeInformation(barcode: Barcode) {
-        val intent = Intent(context, CodeDetailsActivity::class.java)
-        intent.putExtra(CodeDetailsActivity.EXTRA_ID, barcode.id)
+        val intent = Intent(context, DetailsActivity::class.java)
+        intent.putExtra(DetailsActivity.EXTRA_ID, barcode.id)
         startActivity(intent)
     }
 

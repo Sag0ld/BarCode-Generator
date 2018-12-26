@@ -7,11 +7,7 @@ import com.sag0ld.barcodegenerator.data.base.App
 import com.sag0ld.barcodegenerator.R
 import java.util.*
 
-class EAN13(override var content: String, override var createAt: Calendar?) : AbstractBarcode() {
-
-    companion object {
-        val TYPE = "EAN-13"
-    }
+class EAN13(override var content: String, override var createAt: Calendar) : AbstractBarcode() {
 
     override val maxLength = 12
     override var description: String = App.instance.applicationContext.getString(R.string.ean13_description)

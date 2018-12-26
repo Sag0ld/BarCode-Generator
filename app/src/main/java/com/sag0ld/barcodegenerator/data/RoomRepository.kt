@@ -26,4 +26,10 @@ class RoomRepository: BarcodeDao {
             AppDatabase.getAppDatabase(App.instance.applicationContext).barcodeDao().delete(barcode)
         }
     }
+
+    override fun update(barcode: Barcode) {
+        doAsync {
+            AppDatabase.getAppDatabase(App.instance.applicationContext).barcodeDao().update(barcode)
+        }
+    }
 }

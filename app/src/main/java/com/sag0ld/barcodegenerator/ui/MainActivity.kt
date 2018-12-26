@@ -7,14 +7,14 @@ import android.support.v7.app.ActionBarDrawerToggle
 import android.support.v7.app.AppCompatActivity
 import android.view.MenuItem
 import com.sag0ld.barcodegenerator.R
-import com.sag0ld.barcodegenerator.ui.fragment.GenerateBarcodeFragment
+import com.sag0ld.barcodegenerator.ui.fragment.CreateBarcodeFragment
 import com.sag0ld.barcodegenerator.ui.fragment.HistoryFragment
 import kotlinx.android.synthetic.main.activity_main2.*
 import kotlinx.android.synthetic.main.app_bar_main2.*
 
 class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
 
-    private val generateFragment = GenerateBarcodeFragment()
+    private val generateFragment = CreateBarcodeFragment()
     private val historyFragment = HistoryFragment()
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -31,7 +31,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         nav_view.setCheckedItem(R.id.nav_generate_barcode)
 
         val transaction = supportFragmentManager.beginTransaction()
-        transaction.add(fragment_holder.id, generateFragment, GenerateBarcodeFragment.TAG)
+        transaction.add(fragment_holder.id, generateFragment, CreateBarcodeFragment.TAG)
         transaction.commit()
     }
 
@@ -57,8 +57,8 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 }
             }
             R.id.nav_generate_barcode -> {
-                if (supportFragmentManager.findFragmentByTag(GenerateBarcodeFragment.TAG).isRemoving) {
-                    transaction.replace(fragment_holder.id, generateFragment, GenerateBarcodeFragment.TAG)
+                if (supportFragmentManager.findFragmentByTag(CreateBarcodeFragment.TAG).isRemoving) {
+                    transaction.replace(fragment_holder.id, generateFragment, CreateBarcodeFragment.TAG)
                 }
             }
         }

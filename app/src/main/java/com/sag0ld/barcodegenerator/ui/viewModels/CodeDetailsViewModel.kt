@@ -14,7 +14,12 @@ class CodeDetailsViewModel: ViewModel() {
     lateinit var barcodeLiveData: LiveData<Barcode>
 
     fun getBarcode(barcodeId: Long): LiveData<Barcode> {
-        return repository.getBarcodeById(barcodeId)
+        barcodeLiveData = repository.getBarcodeById(barcodeId)
+        return barcodeLiveData
+    }
+
+    fun updateBarcode(barcode: Barcode) {
+        repository.update(barcode)
     }
 
     fun deleteBarcode(barcode: Barcode) {

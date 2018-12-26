@@ -9,7 +9,15 @@ import java.text.SimpleDateFormat
 import java.util.*
 
 @Entity(tableName = "barcodes")
-class Barcode : ViewModel() {
+class Barcode() : ViewModel() {
+
+    constructor(content:String, type:String) : this() {
+        this.content = content
+        this.createAt = Calendar.getInstance().timeInMillis
+        this.isFromScanner = false
+        this.type = type
+    }
+
     @PrimaryKey (autoGenerate = true)
     @ColumnInfo(name = "id")
     var id: Long = 0
@@ -19,9 +27,6 @@ class Barcode : ViewModel() {
 
     @ColumnInfo(name = "content")
     var content: String? = null
-
-    //@ColumnInfo(name = "uri")
-    //var uri: String? = null
 
     @ColumnInfo(name = "isFromScanner")
     var isFromScanner: Boolean = false

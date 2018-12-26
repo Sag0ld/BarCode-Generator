@@ -20,10 +20,11 @@ import com.sag0ld.barcodegenerator.domain.Barcode
 import com.sag0ld.barcodegenerator.ui.viewModels.BarcodeViewModel
 import com.sag0ld.barcodegenerator.util.BarcodeFactory
 import com.sag0ld.barcodegenerator.util.GlideApp
+import kotlinx.android.synthetic.main.fragment_edit.*
 import kotlinx.android.synthetic.main.fragment_generate_barcode.*
 import org.jetbrains.anko.doAsync
 
-class GenerateBarcodeFragment : Fragment(), FABProgressListener {
+class CreateBarcodeFragment : Fragment(), FABProgressListener {
 
     private var contentEditText: EditText? = null
     private var model: BarcodeViewModel? = null
@@ -31,7 +32,7 @@ class GenerateBarcodeFragment : Fragment(), FABProgressListener {
     private lateinit var typeAdapter: ArrayAdapter<CharSequence>
 
     companion object {
-        val TAG = GenerateBarcodeFragment.javaClass.canonicalName
+        val TAG = CreateBarcodeFragment.javaClass.canonicalName
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -156,7 +157,7 @@ class GenerateBarcodeFragment : Fragment(), FABProgressListener {
     }
 
     override fun onCreateOptionsMenu(menu: Menu?, inflater: MenuInflater?) {
-        inflater?.inflate(R.menu.generate_barcode_menu, menu)
+        inflater?.inflate(R.menu.create_barcode_menu, menu)
         super.onCreateOptionsMenu(menu, inflater)
     }
 

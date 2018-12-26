@@ -7,10 +7,7 @@ import com.sag0ld.barcodegenerator.data.base.App
 import com.sag0ld.barcodegenerator.R
 import java.util.*
 
-class UPCE(override var content: String, override var createAt: Calendar?) : AbstractBarcode() {
-
-    companion object {
-    }
+class UPCE(override var content: String, override var createAt: Calendar) : AbstractBarcode() {
 
     override val maxLength = 7
     override var description: String = App.instance.applicationContext.getString(R.string.upce_description)
