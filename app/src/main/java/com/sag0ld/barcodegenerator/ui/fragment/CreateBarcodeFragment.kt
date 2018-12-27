@@ -12,6 +12,7 @@ import android.text.*
 import android.text.style.ForegroundColorSpan
 import android.view.*
 import android.widget.*
+import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.github.jorgecastilloprz.listeners.FABProgressListener
 import com.sag0ld.barcodegenerator.R
 
@@ -103,19 +104,18 @@ class CreateBarcodeFragment : Fragment(), FABProgressListener {
         }
     }
 
-    private val textWatcher = object: TextWatcher {
+    private val textWatcher = object : TextWatcher {
         override fun afterTextChanged(editableText: Editable) {
-            handler.removeCallbacks(inputFinishChecker)
+           // handler.removeCallbacks(inputFinishChecker)
             updateCounterMessage(editableText.length)
             model?.let { model ->
-               model.content = editableText.toString()
+                model.content = editableText.toString()
                 model.currentBarcodeLiveData.value?.let { barcode ->
                     barcode.content = model.content
-                    if(barcode.hasDelayToGenerateBitmap()) {
+                    if (barcode.hasDelayToGenerateBitmap()) {
                         try {
-                            handler.postDelayed(inputFinishChecker, delay)
-                        }
-                        catch (e: Exception) {
+                         //   handler.postDelayed(inputFinishChecker, delay)
+                        } catch (e: Exception) {
                             Toast.makeText(context, e.message,
                                     Toast.LENGTH_SHORT).show()
                         }
@@ -126,21 +126,16 @@ class CreateBarcodeFragment : Fragment(), FABProgressListener {
             }
         }
 
-        override fun onTextChanged(content: CharSequence?, start: Int, before: Int, count: Int) { }
-        override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) { }
+        override fun onTextChanged(content: CharSequence?, start: Int, before: Int, count: Int) {}
+        override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
     }
 
     override fun onResume() {
         super.onResume()
         model?.let { model ->
             model.currentBitmapLiveData.observe(context as LifecycleOwner, Observer<Bitmap> {
-                context?.let { context ->
-                    GlideApp.with(context)
-                        .load(it)
-                            .error(R.drawable.ic_error_loading)
-                        .into(barcodeImageView)
-                    progressBarHolder?.visibility = View.GONE
-                }
+                barcodeImageView.setImageBitmap(it)
+                progressBarHolder?.visibility = View.GONE
             })
 
             contentEditText?.removeTextChangedListener(textWatcher)
@@ -187,7 +182,7 @@ class CreateBarcodeFragment : Fragment(), FABProgressListener {
         }
     }
 
-    fun updateCounterMessage (currentContentSize: Int) {
+    fun updateCounterMessage(currentContentSize: Int) {
         model?.currentBarcodeLiveData?.value?.let { barcode ->
             val counter = SpannableStringBuilder()
             counter.clear()
@@ -218,22 +213,22 @@ class CreateBarcodeFragment : Fragment(), FABProgressListener {
                 }
             }
         } else if (barcode.errors.isNotEmpty()) {
-           Toast.makeText(context, barcode.getErrorsMessage(),
-                   Toast.LENGTH_SHORT).show()
+            Toast.makeText(context, barcode.getErrorsMessage(),
+                    Toast.LENGTH_SHORT).show()
         }
     }
 
-    var delay: Long = 2000
+ /* var delay: Long = 2000
     var handler = Handler(Looper.myLooper())
 
-    private val inputFinishChecker = object: Runnable {
+    private val inputFinishChecker = object : Runnable {
         override fun run() {
             handler.removeCallbacks(this)
-            if (System.currentTimeMillis() >  delay - 500) {
+            if (System.currentTimeMillis() > delay - 500) {
                 model?.currentBarcodeLiveData?.value?.let { barcode ->
                     updateBarcodeImageViewSource(barcode)
                 }
             }
         }
-    }
+    }*/
 }
